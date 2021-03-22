@@ -9,15 +9,15 @@
                         <b-col md="6">
                             <!--<b-card-img src="../assets/default-user-image.png" alt="User Profile Picture" class="rounded-0">
                             </b-card-img>-->
-                            <img src="../assets/default-user-image.png" alt="User Profile Picture">
+                            <img :src="userDetails[0].profile_image" alt="User Profile Picture">
                         </b-col>
                         <b-col md="6">
-                            <b-card-body title="User Information">
-                                <b-card-text><b>First Name</b>: User First Name</b-card-text>
-                                <b-card-text><b>Last Name</b>: User Last Name</b-card-text>
-                                <b-card-text><b>Age</b>: User Age</b-card-text>
+                            <b-card-body :title="userDetails[0].username">
+                                <b-card-text><b>First Name</b>: {{ this.userDetails[0].first_name }}</b-card-text>
+                                <b-card-text><b>Last Name</b>: {{ this.userDetails[0].last_name }}</b-card-text>
+                                <b-card-text><b>Age</b>: {{ this.userDetails[0].age }}</b-card-text>
                                 <b-card-text><b>Gender</b>: User Gender</b-card-text>
-                                <b-card-text><b>Email</b>: User Email</b-card-text>
+                                <b-card-text><b>Email</b>: {{ this.userDetails[0].email }}</b-card-text>
                             </b-card-body>
                         </b-col>
                         <!---->
@@ -30,6 +30,42 @@
         </b-container>
     </div>
 </template>
+<script>
+import axios from 'axios';
+export default {
+    data () {
+        return {
+            userDetails: []
+        }
+    },
+    //Use Axios
+    async created() {
+            try {
+                const response = await axios.get('http://localhost:3000/user/1');
+
+                this.userDetails = response.data;
+                console.log(this.userDetails);
+            } catch(err) {
+                console.error(err);
+            }
+        }
+    }
+    /****Use Fetch
+    //mounted () {
+    async created() {
+            
+           let userDetails = "http://localhost:3000/user/1";
+            
+            fetch(userDetails)
+                .then(function(data) {
+                    return data.json();
+                })
+                .then(function(data) {
+                    console.log(data);
+                }) 
+        }*/
+    //}
+</script>
 
 <style scoped>
 button {

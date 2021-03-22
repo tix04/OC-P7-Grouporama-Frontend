@@ -37,7 +37,9 @@
 
               <img class="img-fluid rounded-circle profilePic" src="./assets/default-user-image.png" alt="Profile Picture">
               <b-nav-item-dropdown right>
-                <b-dropdown-item ><router-link to="/user">User Account</router-link></b-dropdown-item>
+                <b-dropdown-item ><router-link to="/user">User Profile</router-link></b-dropdown-item>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item><router-link to="/settings">Settings</router-link></b-dropdown-item>
                 <b-dropdown-divider></b-dropdown-divider>
                 <b-dropdown-item><router-link to="/">Log In</router-link></b-dropdown-item><!--Change to Log out when connected-->
               </b-nav-item-dropdown>

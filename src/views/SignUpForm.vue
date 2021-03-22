@@ -116,7 +116,7 @@ export default {
    {
        textValidation(id) {
            let inputField = document.getElementById(id);
-           let validInput = null;
+           //let validInput = null;
            let regex = /^[a-zA-Z]+$/;
            if(inputField.value === '' || !regex.test(inputField.value)) {
                return true;
