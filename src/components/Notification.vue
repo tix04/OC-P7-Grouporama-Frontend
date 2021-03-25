@@ -1,17 +1,17 @@
 <template>
 <b-container>
-    <b-jumbotron>
+    <b-container>
         <HelloUser msg="Welcome to Grouporama Chat" />
         <p>You have <span>7</span> new Posts.</p>
         <!--Figure out Logic to determine which posts you haven't seen-->
-    </b-jumbotron>
+    </b-container>
 </b-container>
 </template>
 
 <script>
-import HelloUser from "../components/HelloUser.vue"
+import HelloUser from "./HelloUser.vue"
 export default {
-    name: "Home",
+    name: "Notification",
     components: {
         HelloUser
     }

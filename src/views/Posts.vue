@@ -1,11 +1,15 @@
 <script>
-import axios from 'axios';
+import axios from 'axios'
+import Notification from '../components/Notification.vue'
 export default {
     data () {
         return {
             postArray: [],
             imageUrl: "../assets/default-user-image.png"
         }
+    },
+    components: {
+      Notification
     },
     async created () {
         try {
@@ -35,6 +39,7 @@ export default {
 </script>
 <template>
     <div>
+      <notification />
         <b-container v-for="post in postArray" :key="post.post_id">
           <div class="profilePic">
             <b-img :src="require('../assets/default-user-image.png')" alt="Profile picture" rounded="circle" thumbnail></b-img>

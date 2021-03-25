@@ -1,32 +1,138 @@
 <template>
     <div>
         <b-container>
-            <div>
-
-                <!--<h3>User Information</h3>-->
-                <b-card no-body class="overflow-hidden" style="max-width: 900px;margin: 0 auto 25px auto;">
-                    <b-row no-gutters>
-                        <b-col md="6">
-                            <!--<b-card-img src="../assets/default-user-image.png" alt="User Profile Picture" class="rounded-0">
-                            </b-card-img>-->
-                            <img :src="userDetails[0].profile_image" alt="User Profile Picture">
-                        </b-col>
-                        <b-col md="6">
-                            <b-card-body :title="userDetails[0].username">
-                                <b-card-text><b>First Name</b>: {{ this.userDetails[0].first_name }}</b-card-text>
-                                <b-card-text><b>Last Name</b>: {{ this.userDetails[0].last_name }}</b-card-text>
-                                <b-card-text><b>Age</b>: {{ this.userDetails[0].age }}</b-card-text>
-                                <b-card-text><b>Gender</b>: User Gender</b-card-text>
-                                <b-card-text><b>Email</b>: {{ this.userDetails[0].email }}</b-card-text>
-                            </b-card-body>
-                        </b-col>
-                        <!---->
-                    </b-row>
-                </b-card>
-                <b-button variant="outline-success">Update</b-button>
-                <b-button variant="danger">Delete Account</b-button>
-            
+            <div class="profilePicture">
+                <b-row>
+                    <b-col class="username">
+                        <b-img thumbnail rounded :src="require('../assets/default-user-image.png')" alt="User Profile Picture"></b-img>
+                        <br/>
+                        <span style="margin-left: 20px;">{{ this.userDetails[0].username }}</span>
+                    </b-col>
+                </b-row>
+                
             </div>
+            <b-container>
+                    <b-row class="userInfo">
+                        <b-col class="label">First Name</b-col>
+                        <b-col>{{ this.userDetails[0].first_name }}</b-col>
+                        <b-col class="edit"><b-button @click="changeFirstName" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
+                    </b-row>
+                    <div v-show="this.editFirstName" class="modificationForm">
+                        <h5>Please Enter your first name:</h5><br/>
+
+                        <b-form inline>
+                            <label class="sr-only" for="newFirstName">First Name:</label>
+                            <b-form-input
+                            id="newFirstName"
+                            class="mb-2 mr-sm-2 mb-sm-0"
+                            placeholder="New First Name"
+                            ></b-form-input>
+                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="danger" @click="hideFirstName">Cancel</b-button>
+                        </b-form>
+                    </div>
+                    <b-row class="userInfo">
+                        <b-col class="label">Last Name</b-col>
+                        <b-col>{{ this.userDetails[0].last_name }}</b-col>
+                        <b-col class="edit"><b-button @click="changeLastName" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
+                    </b-row>
+                    <div v-show="this.editLastName" class="modificationForm">
+                        <h5>Please Enter your last name:</h5><br/>
+
+                        <b-form inline>
+                            <label class="sr-only" for="newLastNAme">Last Name:</label>
+                            <b-form-input
+                            id="newLastName"
+                            class="mb-2 mr-sm-2 mb-sm-0"
+                            placeholder="New Last Name"
+                            ></b-form-input>
+                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="danger" @click="hideLastName">Cancel</b-button>
+                        </b-form>
+                    </div>
+                    <b-row class="userInfo">
+                        <b-col class="label">Age</b-col>
+                        <b-col>{{ this.userDetails[0].age }}</b-col>
+                        <b-col class="edit"><b-button @click="changeAge" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
+                    </b-row>
+                    <div v-show="this.editAge" class="modificationForm">
+                        <h5>Please Enter your age:</h5><br/>
+
+                        <b-form inline>
+                            <label class="sr-only" for="newAge">Age:</label>
+                            <b-form-input
+                            id="newAge"
+                            type="number"
+                            class="mb-2 mr-sm-2 mb-sm-0"
+                            ></b-form-input>
+                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="danger" @click="hideAge">Cancel</b-button>
+                        </b-form>
+                    </div>
+                    <b-row class="userInfo">
+                        <b-col class="label">Email</b-col>
+                        <b-col>{{ this.userDetails[0].email }}</b-col>
+                        <b-col class="edit"><b-button @click="changeEmail" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
+                    </b-row>
+                    <div v-show="this.editEmail" class="modificationForm">
+                        <h5>Please Enter your new email address:</h5><br/>
+
+                        <b-form inline>
+                            <label class="sr-only" for="newEmail">email:</label>
+                            <b-form-input
+                            id="newEmail"
+                            type="email"
+                            class="mb-2 mr-sm-2 mb-sm-0"
+                            placeholder="xyz@mail.com"
+                            ></b-form-input>
+                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="danger" @click="hideEmail">Cancel</b-button>
+                        </b-form>
+                    </div>
+                    <b-row class="userInfo">
+                        <b-col class="label">Username</b-col>
+                        <b-col>{{ this.userDetails[0].username }}</b-col>
+                        <b-col class="edit"><b-button @click="changeUsername" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
+                    </b-row>
+                    <div v-show="this.editUsername" class="modificationForm">
+                        <h5>Please Enter your new Username:</h5><br/>
+
+                        <b-form inline>
+                            <label class="sr-only" for="newUsername">Username:</label>
+                            <b-form-input
+                            id="newUsername"
+                            class="mb-2 mr-sm-2 mb-sm-0"
+                            placeholder="New Username"
+                            ></b-form-input>
+                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="danger" @click="hideUsername">Cancel</b-button>
+                        </b-form>
+                    </div>
+                    <b-row class="userInfo">
+                        <b-col class="label">Modify your Password</b-col>
+                        <b-col class="edit"><b-button @click="changePassword" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
+                    </b-row>
+                    <div v-show="this.editPassword" class="modificationForm">
+                        <h5>Please Enter your new Password:</h5><br/>
+
+                        <b-form inline>
+                            <label class="sr-only" for="newPassword">Password:</label>
+                            <b-form-input
+                            id="newPassword"
+                            type="password"
+                            class="mb-2 mr-sm-2 mb-sm-0"
+                            ></b-form-input>
+                            <label class="sr-only" for="confirmPassword">Confirm Password:</label>
+                            <b-form-input
+                            id="confirmPassword"
+                            type="password"
+                            class="mb-2 mr-sm-2 mb-sm-0"
+                            ></b-form-input>
+                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="danger" @click="hidePassword">Cancel</b-button>
+                        </b-form>
+                    </div>
+            </b-container>
         </b-container>
     </div>
 </template>
@@ -35,7 +141,13 @@ import axios from 'axios';
 export default {
     data () {
         return {
-            userDetails: []
+            userDetails: [],
+            editUsername: false,
+            editFirstName: false,
+            editLastName: false,
+            editAge: false,
+            editEmail: false,
+            editPassword: false
         }
     },
     //Use Axios
@@ -48,6 +160,45 @@ export default {
             } catch(err) {
                 console.error(err);
             }
+        },
+        methods: {
+            changeFirstName() {
+                this.editFirstName = true;
+            },
+             changeLastName() {
+                this.editLastName = true;
+            },
+             changeAge() {
+                this.editAge = true;
+            },
+             changeEmail() {
+                this.editEmail = true;
+            },
+            changeUsername() {
+                this.editUsername = true;
+            },
+             changePassword() {
+                this.editPassword = true;
+            },
+            hideFirstName() {
+                this.editFirstName = false;
+            },
+             hideLastName() {
+                this.editLastName = false;
+            },
+             hideAge() {
+                this.editAge = false;
+            },
+             hideEmail() {
+                this.editEmail = false;
+            },
+            hideUsername() {
+                this.editUsername = false;
+            },
+             hidePassword() {
+                this.editPassword = false;
+            }
+
         }
     }
     /****Use Fetch
@@ -57,10 +208,10 @@ export default {
            let userDetails = "http://localhost:3000/user/1";
             
             fetch(userDetails)
-                .then(function(data) {
+                .b-colen(function(data) {
                     return data.json();
                 })
-                .then(function(data) {
+                .b-colen(function(data) {
                     console.log(data);
                 }) 
         }*/
@@ -72,8 +223,45 @@ button {
     margin: 0 5px;
 }
 
+.profilePicture {
+    margin: 0px auto 50px auto;
+}
+
 img {
-    width: 300px;
-    float: left;
+    width: 150px;
+}
+
+.username {
+    font-size: 2rem;
+    font-weight: bolder;
+    text-align: left;
+}
+
+.userInfo {
+    padding: 15px;
+    background-color: #eee;
+    border: 1px solid #dedede;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.label {
+    font-weight: bold;
+}
+
+.edit {
+    text-align: right;
+}
+
+.b-icon {
+    margin-left: 10px;
+}
+
+.modificationForm {
+    text-align: left;
+    margin-bottom: 15px;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 15px;
 }
 </style>

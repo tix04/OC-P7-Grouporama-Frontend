@@ -25,8 +25,7 @@
           <b-collapse id="nav-collapse" is-nav>
             <b-navbar-nav>
               <b-nav-item ><router-link to="/"><b-icon-door-open></b-icon-door-open><br/>Login</router-link></b-nav-item>
-              <b-nav-item ><router-link to="/posts" class="text-white"><b-icon-sticky></b-icon-sticky><br/>Posts</router-link></b-nav-item>
-              <b-nav-item ><router-link to="/home" class="text-white"><b-icon-house-door-fill></b-icon-house-door-fill><br/>Home</router-link></b-nav-item>
+              <b-nav-item ><router-link to="/posts" class="text-white"><b-icon-sticky></b-icon-sticky><br/>Home</router-link></b-nav-item>
             </b-navbar-nav>
 
           <!-- Right aligned nav items -->
