@@ -132,6 +132,15 @@
                             <b-button variant="danger" @click="hidePassword">Cancel</b-button>
                         </b-form>
                     </div>
+                    <b-row class="userInfo">
+                        <b-col class="label">Delete your account</b-col>
+                        <b-col class="edit">
+                            <b-button variant="danger">
+                                Delete<b-icon icon="pencil"></b-icon>
+                            </b-button>
+                        </b-col>
+                        
+                    </b-row>
             </b-container>
         </b-container>
     </div>
@@ -263,5 +272,19 @@ img {
     border: 1px solid black;
     border-radius: 10px;
     padding: 15px;
+}
+
+.setting {
+    text-align: left;
+    font-weight:  bold;
+    border: 1px solid #eee;
+    margin: 10px;
+    padding: 15px;
+    background-color: rgb(250, 250, 250);
+    border-radius: 10px;
+}
+
+.delete {
+    color: red;
 }
 </style>

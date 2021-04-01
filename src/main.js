@@ -4,6 +4,7 @@ import { createPopper } from '@popperjs/core';
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import Vuelidate from 'vuelidate'
 
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -19,6 +20,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
+Vue.use(Vuelidate)
 Vue.use(IconsPlugin)
 Vue.use( createPopper )
 

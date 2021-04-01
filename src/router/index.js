@@ -3,7 +3,6 @@ import VueRouter from 'vue-router'
 import SignUp from '../views/SignUpForm.vue'
 import Posts from '../views/Posts.vue'
 import User from '../views/User.vue'
-import Settings from '../views/Settings.vue'
 import Login from '../views/Login.vue'
 
 Vue.use(VueRouter)
@@ -28,16 +27,11 @@ const routes = [
     path: '/user',
     name: 'User',
     component: User
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: Settings
   }
-]
+];
 
 const router = new VueRouter({
   routes
-})
+});
 
 export default router
