@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-container style="width: 50%;">
-            <b-form @submit="onSubmit" id="form">
+            <b-form @submit.prevent="onSubmit" enctype="multipart/form-data" id="form">
                 <b-form-group
                 id=userInput2
                 label="Upload your Profile Picture(Optional)"
@@ -11,7 +11,7 @@
                         id="profilePhoto"
                         ref="profilePhoto"
                         placeholder="Select file"
-                        accept="image/jpeg, image/png, image/gif, image/jpg"
+                        accept="image/*"
                         @change="upload"
                         >
                         </b-form-file>
@@ -235,9 +235,9 @@ export default {
                 username: '',
                 password: '',
                 passwordCheck: '',
-                
+                profilePhoto: ''
             },
-            profilePhoto: null
+            
         }
     },
     validations: {
@@ -300,7 +300,7 @@ export default {
         
 
     },
-    methods: {
+    methods:{
         togglePassword() {
             var show = document.getElementById('password');
             
@@ -320,29 +320,55 @@ export default {
             if(show.type === 'password') {
                 show.type = 'text';
                 this.icon2 = 'eye-slash';
-                //toggleButton.setAttribute('icon', 'eye-slash') = 'Hide Password'
             }else {
                 show.type = 'password';
                 this.icon2 = 'eye';
-                //toggleButton.setAttribute('icon', 'eye') = 'Show Password'
             }
         },
-        upload() {
-            let image = document.getElementById('profilePhoto');
-            this.profilePhoto = image.files[0];
+        upload(/*event*/) {
+            //let image = document.getElementById('profilePhoto');
+            this.form.profilePhoto = /*image.files[0];*//*event.target.files[0]*/this.$refs.file.files[0];
             console.log(this.profilePhoto);
-        },
-        onSubmit(event) {
-            event.preventDefault();
-            const form = JSON.stringify(this.form);
-            console.log(form);
-            axios.post('http://localhost:3000/user/newUser', {user: form, image: this.profilePhoto})
+            /*axios.post('http://localhost:3000/images', {images: this.profilePhoto})
             .then((res) => {
                 console.log(res)
             })
             .catch((err) => {
                 console.log(err)
+            })*/
+        },
+        async onSubmit(/*event*/) {
+            /*event.preventDefault();*/
+            const fd = new FormData();
+            fd.append('image', this.form.profilePhoto);
+            fd.append('first_name', this.form.firstName);
+            fd.append('last_name', this.form.lastName);
+            fd.append('age', this.form.age);
+            fd.append('email', this.form.email);
+            fd.append('username', this.form.username);
+            fd.append('password', this.form.password);
+            /*const form = JSON.stringify(this.form);*/
+            //console.log(fd, this.form.profilePhoto);
+            //console.log({user: form, image: this.profilePhoto})
+            try{
+                await axios.post('/user/newUser', fd);
+            } catch (err) {
+                console.log(err);
+            }
+            /*await axios.post('http://localhost:3000/user/newUser',
+             //{user: form, image: this.profilePhoto}
+             fd, 
+             {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             })
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((err) => {
+                console.log(err)
+            })*/
         }
 
     }
