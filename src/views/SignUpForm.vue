@@ -9,7 +9,7 @@
                     <b-input-group size="sm" class="mb-2">
                         <b-form-file
                         id="profilePhoto"
-                        ref="profilePhoto"
+                        ref="profilePicture"
                         placeholder="Select file"
                         accept="image/*"
                         @change="upload"
@@ -235,9 +235,9 @@ export default {
                 username: '',
                 password: '',
                 passwordCheck: '',
-                profilePhoto: ''
+                
             },
-            
+           profilePhoto: null 
         }
     },
     validations: {
@@ -325,9 +325,9 @@ export default {
                 this.icon2 = 'eye';
             }
         },
-        upload(/*event*/) {
+        upload(event) {
             //let image = document.getElementById('profilePhoto');
-            this.form.profilePhoto = /*image.files[0];*//*event.target.files[0]*/this.$refs.file.files[0];
+            this.profilePhoto = /*image.files[0];*//*event.target.files[0]*/event.target.files[0];
             console.log(this.profilePhoto);
             /*axios.post('http://localhost:3000/images', {images: this.profilePhoto})
             .then((res) => {
@@ -340,7 +340,7 @@ export default {
         async onSubmit(/*event*/) {
             /*event.preventDefault();*/
             const fd = new FormData();
-            fd.append('image', this.form.profilePhoto);
+            fd.append('image', this.profilePhoto);
             fd.append('first_name', this.form.firstName);
             fd.append('last_name', this.form.lastName);
             fd.append('age', this.form.age);
@@ -351,7 +351,15 @@ export default {
             //console.log(fd, this.form.profilePhoto);
             //console.log({user: form, image: this.profilePhoto})
             try{
-                await axios.post('/user/newUser', fd);
+                await axios.post('http://localhost:3000/user/newUser', fd);
+                this.form.firstName = '';
+                this.form.latName = '';
+                this.form.age = 0;
+                this.form.email = '';
+                this.form.username = '';
+                this.form.password = '';
+                this.form.passwordCheck = '';
+                this.profilePhoto = null
             } catch (err) {
                 console.log(err);
             }
