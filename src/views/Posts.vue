@@ -63,7 +63,7 @@ export default {
           <b-container class="comments">
 
             <b-row>
-              <b-col cols="2"><img :src="require('../assets/male-user.jpg')" alt="Profile pic"></b-col>
+              <b-col cols="2"><img :src="require('../assets/default-user-image.png')" alt="Profile pic"></b-col>
               <b-col class="content" cols="8">
                 <span class="username">Username</span> 
                 <br/>

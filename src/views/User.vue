@@ -4,7 +4,7 @@
             <div class="profilePicture">
                 <b-row>
                     <b-col class="username">
-                        <b-img thumbnail rounded :src="this.userDetails[0].profile_image/*require('../assets/default-user-image.png')*/" alt="User Profile Picture"></b-img>
+                        <b-img thumbnail rounded :src="this.userDetails[0].profile_image" alt="User Profile Picture"></b-img>
                         <br/>
                         <span style="margin-left: 20px;">{{ this.userDetails[0].username }}</span>
                     </b-col>
@@ -162,7 +162,7 @@ export default {
     //Use Axios
     async created() {
             try {
-                const response = await axios.get('http://localhost:3000/user/7');
+                const response = await axios.get('http://localhost:3000/user/18');
 
                 this.userDetails = response.data;
                 console.log(this.userDetails);
@@ -237,11 +237,11 @@ button {
 }
 
 img {
-    width: 150px;
+    width: 200px;
 }
 
 .username {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: bolder;
     text-align: left;
 }
