@@ -3,7 +3,7 @@
     <b-container>
         <HelloUser msg="Welcome to Grouporama Chat" />
         <p v-if="this.totalPosts > this.viewedPosts">You have <span>{{ newPosts }}</span> new Posts.</p>
-        <p v-else>You have no new Notifications</p>
+        <p v-else>You have no new Posts</p>
         <!--Figure out Logic to determine which posts you haven't seen-->
     </b-container>
 </b-container>

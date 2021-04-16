@@ -51,7 +51,7 @@
                 </b-form-group>
 
                 <b-form-group
-                id="userInput2"
+                id="userInput3"
                 label="Last Name: "
                 label-for="lName"
                 >
@@ -78,7 +78,7 @@
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
-                id="userInput3"
+                id="userInput4"
                 label="Age: "
                 label-for="age"
                 >
@@ -103,7 +103,7 @@
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
-                id="userInput4"
+                id="userInput5"
                 label="Email Address: "
                 label-for="email"
                 >
@@ -129,7 +129,7 @@
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
-                id="userInput5"
+                id="userInput6"
                 label="Username: "
                 label-for="username"
                 >
@@ -156,7 +156,7 @@
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
-                id="userInput6"
+                id="userInput7"
                 label="Password: "
                 label-for="password"
                 >
@@ -185,7 +185,7 @@
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
-                id="userInput7"
+                id="userInput8"
                 label="Confirm your Password: "
                 label-for="pwdCheck"
                 >
@@ -212,7 +212,7 @@
                     </b-input-group>
                 </b-form-group>
                 <b-button type="submit" variant="success">Submit</b-button>
-                <b-button type="reset" variant="danger">Reset</b-button>
+                <b-button type="reset" variant="danger" @click="onReset()">Reset</b-button>
             </b-form>
         </b-container>
         
@@ -347,19 +347,21 @@ export default {
             fd.append('email', this.form.email);
             fd.append('username', this.form.username);
             fd.append('password', this.form.password);
+            console.log(fd);
             /*const form = JSON.stringify(this.form);*/
             //console.log(fd, this.form.profilePhoto);
             //console.log({user: form, image: this.profilePhoto})
-            try{
+            try {
                 await axios.post('http://localhost:3000/user/newUser', fd);
                 this.form.firstName = '';
-                this.form.latName = '';
+                this.form.lastName = '';
                 this.form.age = 0;
                 this.form.email = '';
                 this.form.username = '';
                 this.form.password = '';
                 this.form.passwordCheck = '';
-                this.profilePhoto = null
+                this.profilePhoto = null,
+                window.location.href = '#/posts';
             } catch (err) {
                 console.log(err);
             }
