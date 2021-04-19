@@ -54,11 +54,11 @@ export default {
       </b-container>
 
       <notification />
-      <b-container v-if="this.postArray.length === 0">
+      <!--<b-container v-if="this.postArray.length === 0">
         <h1 style="font-size: 1.5rem; font-weight: bold;">Grouporama Social Network</h1>
           <p>There are no Posts to be displayed</p>
-      </b-container>
-      <b-container v-else v-for="post in postArray" :key="post.post_id">
+      </b-container>-->
+      <b-container v-for="post in postArray" :key="post.post_id">
         <div class="profilePic">
           <b-img v-if="post.profile_image === null || post.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle" thumbnail></b-img>
           <b-img v-else :src="post.profile_image" alt="Profile picture" rounded="circle" thumbnail></b-img>
@@ -69,13 +69,13 @@ export default {
         <hr/>
 
         <div class="attachedFiles">
-          <b-img class="postFiles" :src="post.attached_files"></b-img>
+          <b-img class="postFiles" :src="post.post_image"></b-img>
         </div>
         <hr/>
 
         <div class="icons">
-          <span><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments 3</span>
-          <span><b-icon-hand-thumbs-up variant="primary" font-scale="1.2"></b-icon-hand-thumbs-up> 5</span>
+          <span><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments {{post.comments}}</span>
+          <span><b-icon-hand-thumbs-up variant="primary" font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</span>
           <span><b-icon-hand-thumbs-down variant="danger" font-scale="1.2"></b-icon-hand-thumbs-down> 3</span>
         </div>
         

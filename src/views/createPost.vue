@@ -44,7 +44,8 @@ export default {
         return {
             form: {
                 postContent: '',
-                likes: 0
+                likes: 0,
+                comments: 0
             },
             //postContent: '',
             //likes: 0,
@@ -61,6 +62,7 @@ export default {
             fd.append('image', this.postImage);
             fd.append('postContent', this.form.postContent);
             fd.append('likes', this.form.likes);
+            fd.append('comments', this.form.comments);
             //const formData = {postContent: this.form.postContent, likes: this.form.likes, image: this.postImage};
             console.log(/*formData*/fd);
 
