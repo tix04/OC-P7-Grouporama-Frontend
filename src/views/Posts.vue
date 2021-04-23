@@ -5,8 +5,11 @@ export default {
     data () {
         return {
             postArray: [],
+            commentArray: [],
             imageUrl: "../assets/default-user-image.png",
-            profile_image: ''
+            profile_image: '',
+            commentInput: false,
+            newComment: ''
         }
     },
     components: {
@@ -16,11 +19,26 @@ export default {
         try {
                 const response = await axios.get('http://localhost:3000/posts');
 
-                this.postArray = response.data;
+                this.postArray = response.data[0];
+                this.commentArray = response.data[1];
                 console.log(this.postArray);
+                console.log(this.commentArray);
             } catch(err) {
                 console.error(err);
             }
+        },
+        methods: {
+          addComment() {
+            this.commentInput = true;
+          },
+          postComment () {
+            this.newComment = document.getElementById('newComment').value;
+            console.log(this.newComment);
+            this.commentInput = false;
+          },
+          cancelComment () {
+            this.commentInput = false;
+          }
         }
     }
     /*Use Fetch
@@ -74,19 +92,35 @@ export default {
         <hr/>
 
         <div class="icons">
-          <span><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments {{post.comments}}</span>
+          <span id="comments"><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments {{post.comments}}</span>
           <span><b-icon-hand-thumbs-up variant="primary" font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</span>
           <span><b-icon-hand-thumbs-down variant="danger" font-scale="1.2"></b-icon-hand-thumbs-down> 3</span>
+          <b-button size="sm" @click="addComment"><b-icon class="commentIcon" icon="plus-circle"></b-icon>Add comment</b-button>
         </div>
-        
-        <b-container class="comments">
 
-          <b-row>
-            <b-col cols="2"><img :src="require('../assets/default-user-image.png')" alt="Profile pic"></b-col>
+        <b-container mb="2" v-show="commentInput">
+            <b-form-textarea
+            id="newComment"
+            v-model="newComment"
+            placeholder="Add your Comments..."
+            rows="1"
+            max-rows="3"
+            >
+            </b-form-textarea>
+            <b-button size="sm" @click="postComment">Submit</b-button>
+        </b-container>
+
+        <b-container v-for="comment in commentArray" :key="comment.comment_id" class="comments">
+
+          <b-row v-if="comment.post_id === post.post_id">
+            <b-col cols="2">
+              <b-img v-if="comment.profile_image === null || comment.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle" thumbnail></b-img>
+              <b-img v-else :src="comment.profile_image" alt="Profile picture" rounded="circle" thumbnail></b-img>
+            </b-col>
             <b-col class="content" cols="8">
-              <span class="username">Username</span> 
+              <span class="username">{{comment.username}}</span> 
               <br/>
-              {{ post.comment_content}}
+              {{ comment.comment_content}}
             </b-col>
           </b-row>
             
@@ -131,6 +165,10 @@ export default {
     margin: 0 auto;
   }
 
+  .commentIcon {
+    margin-right: 10px;
+  }
+
   .icons {
     padding: 5px;
   }
@@ -159,6 +197,10 @@ export default {
     border-radius: 15px;
   }
 
-    
+  #newComment {
+    margin: 0 auto 10px auto;
+
+    width: 75%;
+  }
     
 </style>
