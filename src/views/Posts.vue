@@ -32,12 +32,24 @@ export default {
           addComment() {
             this.commentInput = true;
           },
-          postComment (id) {
+          async postComment (id) {
             this.newComment = document.getElementById('newComment').value;
             this.postID = id;
+            
             console.log(this.postID);
             console.log(this.newComment);
-            this.commentInput = false;
+
+            let commentData = {commentContent: this.newComment, postID: this.postID};
+
+            try {
+              await axios.post('http://localhost:3000/comments/newComment', commentData);
+              this.commentInput = false;
+              this.newComment = '';
+              this.postID = '';
+            } catch (err) {
+              console.log(err);
+            }
+            
           },
           cancelComment () {
             this.commentInput = false;
@@ -116,9 +128,9 @@ export default {
         <b-container v-for="comment in commentArray" :key="comment.comment_id" class="comments">
 
           <b-row v-if="comment.post_id === post.post_id">
-            <b-col cols="2">
-              <b-img v-if="comment.profile_image === null || comment.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle" thumbnail></b-img>
-              <b-img v-else :src="comment.profile_image" alt="Profile picture" rounded="circle" thumbnail></b-img>
+            <b-col cols="1">
+              <b-img v-if="comment.profile_image === null || comment.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle"></b-img>
+              <b-img v-else :src="comment.profile_image" alt="Profile picture" rounded="circle"></b-img>
             </b-col>
             <b-col class="content" cols="8">
               <span class="username">{{comment.username}}</span> 
@@ -148,10 +160,15 @@ export default {
     text-align: left;
   }
 
+  .profilePic img {
+    width: 50px;
+    height: 50px;
+  }
+
   .container {
     background-color: #efefef;
     margin: 20px auto;
-    padding: 15px;
+    padding: 5px 0;
   }
     
   .profilePic, .comments {
@@ -189,7 +206,8 @@ export default {
 
   .comments img {
     width: 50px;
-    border: 1px solid black;
+    height: 50px;
+    border: 1px solid white;
     border-radius: 50%;
   }
 
