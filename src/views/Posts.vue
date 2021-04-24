@@ -9,7 +9,8 @@ export default {
             imageUrl: "../assets/default-user-image.png",
             profile_image: '',
             commentInput: false,
-            newComment: ''
+            newComment: '',
+            postID: null
         }
     },
     components: {
@@ -31,8 +32,10 @@ export default {
           addComment() {
             this.commentInput = true;
           },
-          postComment () {
+          postComment (id) {
             this.newComment = document.getElementById('newComment').value;
+            this.postID = id;
+            console.log(this.postID);
             console.log(this.newComment);
             this.commentInput = false;
           },
@@ -76,7 +79,7 @@ export default {
         <h1 style="font-size: 1.5rem; font-weight: bold;">Grouporama Social Network</h1>
           <p>There are no Posts to be displayed</p>
       </b-container>-->
-      <b-container v-for="post in postArray" :key="post.post_id">
+      <b-container v-for="post in postArray" :key="post.post_id" :id="post.post_id">
         <div class="profilePic">
           <b-img v-if="post.profile_image === null || post.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle" thumbnail></b-img>
           <b-img v-else :src="post.profile_image" alt="Profile picture" rounded="circle" thumbnail></b-img>
@@ -86,7 +89,7 @@ export default {
         <p class="content"> {{ post.post_content }} </p>
         <hr/>
 
-        <div class="attachedFiles">
+        <div v-if="post.post_image !== '' || post.post_image !== null" class="attachedFiles"><!--Display only if image is present-->
           <b-img class="postFiles" :src="post.post_image"></b-img>
         </div>
         <hr/>
@@ -107,7 +110,7 @@ export default {
             max-rows="3"
             >
             </b-form-textarea>
-            <b-button size="sm" @click="postComment">Submit</b-button>
+            <b-button size="sm" @click="postComment(post.post_id)">Submit</b-button>
         </b-container>
 
         <b-container v-for="comment in commentArray" :key="comment.comment_id" class="comments">
