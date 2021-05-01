@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-container style="width: 50%;">
+        <b-container id="signUp">
             <b-form @submit.prevent="onSubmit" enctype="multipart/form-data" id="form">
                 <b-form-group
                 id=userInput2
@@ -386,6 +386,11 @@ export default {
 
 </script>
 <style>
+
+#signUp {
+    padding: 15px;
+}
+
 label {
     text-align: left;
     font-weight: bold;

@@ -70,6 +70,7 @@ export default {
                 await axios.post('http://localhost:3000/posts/newPost', fd);
                 this.form.postContent = '';
                 this.postImage = null;
+                this.$router.push('/posts');
             } catch (err) {
                 console.log(err);
             }

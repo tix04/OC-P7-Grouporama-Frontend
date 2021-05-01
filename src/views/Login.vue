@@ -2,13 +2,13 @@
   <div>
     <b-container class="bv-example-row">
       <b-row>
-        <b-col cols="8" >
+        <b-col md="6" >
           <img src="../assets/icon.png" alt="Grouporama Logo">
         </b-col>
-        <b-col cols="4">
+        <b-col md="6">
           <b-container style="margin-top: 22%;">
             <b-jumbotron>
-          <!--This Section should be a different component called Login located in Components-->
+          
               <b-form>
                 <b-form-group
                 id="userInput1"

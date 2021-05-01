@@ -5,12 +5,13 @@ export default {
     data () {
         return {
             postArray: [],
-            commentArray: [],
             imageUrl: "../assets/default-user-image.png",
             profile_image: '',
-            commentInput: false,
             newComment: '',
-            postID: null
+            postID: null,
+            initialComments: 0,
+            initialLikes: 0,
+            commentID: null
         }
     },
     components: {
@@ -20,39 +21,84 @@ export default {
         try {
                 const response = await axios.get('http://localhost:3000/posts');
 
-                this.postArray = response.data[0];
-                this.commentArray = response.data[1];
+                //this.postArray = response.data[0];
+                //this.commentArray = response.data[1];
+                let posts = response.data[0];
+                let comments = response.data[1];
+                
+                for (let i = 0; i < posts.length; i++) {
+                  posts[i].linked_comments = [];
+                  for (let j =0; j< comments.length; j++) {
+                    if(comments[j].post_id === posts[i].post_id) {
+                      posts[i].linked_comments.push(comments[j]);
+                    }
+                  }
+                }
+                this.postArray = posts;
                 console.log(this.postArray);
-                console.log(this.commentArray);
             } catch(err) {
                 console.error(err);
             }
         },
+        /*computed: { TRY THIS CODE TO RENDER COMMENTS
+          fetchComments: function (id) {
+            for (let i = 0; i < this.postArray.length; i++) {
+              this.postArray[i].comments_content = [];
+                for (let j = 0; j < this.commentArray.length; j++) {
+                  if(this.commentArray[j].post_id === postArray[i].post_id) {
+                    postArray[i].comments_content.push(commentArray[j]);
+                  };
+                }
+              console.log(postArray);
+            }; 
+          }
+        },*/
         methods: {
-          addComment() {
-            this.commentInput = true;
+          addComment(index) {
+            //this.commentInput = true;
+            document.querySelectorAll('.commentInputContainer')[index].style.display = 'block';
           },
-          async postComment (id) {
+          cancelComment (index) {
+            //this.commentInput = false;
+            document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
+            const commentElement = document.getElementById(`newComment${index}`);
+            commentElement.value = '';
+          },
+          deleteComment (id) {
+            this.commentID = id;
+            console.log(this.commentID);
+          },
+          async postComment (id, index) {
             this.newComment = document.getElementById('newComment').value;
             this.postID = id;
+            this.initialComments = this.postArray[index].comments;
+
+            const commentsUpdated = this.initialComments + 1;
+            let commentAmount = document.querySelectorAll('.icons .totalComments')[index].innerHTML;
+            
+            commentAmount = parseInt(commentAmount) + 1;
+            document.querySelectorAll('.icons .totalComments')[index].innerHTML = commentAmount;
             
             console.log(this.postID);
             console.log(this.newComment);
+            console.log(this.initialComments);
+            console.log(commentsUpdated);
+            console.log(commentAmount);
 
-            let commentData = {commentContent: this.newComment, postID: this.postID};
+            let commentData = {commentContent: this.newComment, postID: this.postID, comments: commentsUpdated };
 
             try {
               await axios.post('http://localhost:3000/comments/newComment', commentData);
               this.commentInput = false;
               this.newComment = '';
               this.postID = '';
+              this.initialComments = 0;
+              document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
+              //this.$router.go();
             } catch (err) {
               console.log(err);
             }
             
-          },
-          cancelComment () {
-            this.commentInput = false;
           }
         }
     }
@@ -72,7 +118,7 @@ export default {
 //}
 </script>
 <template>
-    <div>
+    <div id="posts">
       <b-container style="background: transparent;">
         <div>
           <a href="#/createPost">
@@ -91,7 +137,7 @@ export default {
         <h1 style="font-size: 1.5rem; font-weight: bold;">Grouporama Social Network</h1>
           <p>There are no Posts to be displayed</p>
       </b-container>-->
-      <b-container v-for="post in postArray" :key="post.post_id" :id="post.post_id">
+      <b-container v-for="(post, index) in postArray" :key="post.post_id" :id="'post_'+post.post_id"><!--User (post, index) in v-for loop and use index as name attribute to retrieve initial comment and like-->
         <div class="profilePic">
           <b-img v-if="post.profile_image === null || post.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle" thumbnail></b-img>
           <b-img v-else :src="post.profile_image" alt="Profile picture" rounded="circle" thumbnail></b-img>
@@ -107,44 +153,56 @@ export default {
         <hr/>
 
         <div class="icons">
-          <span id="comments"><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments {{post.comments}}</span>
-          <span><b-icon-hand-thumbs-up variant="primary" font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</span>
-          <span><b-icon-hand-thumbs-down variant="danger" font-scale="1.2"></b-icon-hand-thumbs-down> 3</span>
-          <b-button size="sm" @click="addComment"><b-icon class="commentIcon" icon="plus-circle"></b-icon>Add comment</b-button>
+          
+          <b-button-toolbar>
+            <b-button-group class="mr-1">
+              <span><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments <span class="totalComments">{{post.comments}}</span></span>
+              <b-button size="sm" variant="outline-info" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</b-button>
+              <b-button size="sm" @click="addComment(index)" variant="outline-secondary" style="border: none;"><b-icon class="commentIcon" icon="plus-circle"></b-icon>Comment</b-button>
+            </b-button-group>
+          </b-button-toolbar>
         </div>
 
-        <b-container mb="2" v-show="commentInput">
+        <!--<b-container mb="2" v-show="commentInput">-->
+          <b-container mb="2" style="display: none;" class="commentInputContainer">
             <b-form-textarea
-            id="newComment"
+            class="newComment"
+            :id="'newComment_'+index"
             v-model="newComment"
             placeholder="Add your Comments..."
             rows="1"
             max-rows="3"
             >
             </b-form-textarea>
-            <b-button size="sm" @click="postComment(post.post_id)">Submit</b-button>
+            <b-button size="sm" @click="postComment(post.post_id, index)" variant="primary">Submit</b-button>
+            <b-button size="sm" @click="cancelComment(index)" variant="secondary">Cancel</b-button>
         </b-container>
 
-        <b-container v-for="comment in commentArray" :key="comment.comment_id" class="comments">
-
-          <b-row v-if="comment.post_id === post.post_id">
-            <b-col cols="1">
+        <b-container v-if="post.comments > 0">
+            
+          <b-row v-for="comment in post.linked_comments" :key="comment.comment_id" :id="'comments_'+index" class="comments">
+            
+            <b-col class="content" cols="12">
+              <span class="username">{{comment.username}}</span> 
               <b-img v-if="comment.profile_image === null || comment.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle"></b-img>
               <b-img v-else :src="comment.profile_image" alt="Profile picture" rounded="circle"></b-img>
-            </b-col>
-            <b-col class="content" cols="8">
-              <span class="username">{{comment.username}}</span> 
               <br/>
               {{ comment.comment_content}}
+              <b-row align-h="end">
+                <b-button @click="deleteComment(comment.comment_id)" size="sm" pill variant="outline-danger" style="font-weight: bold;border: none;">Delete</b-button>
+              </b-row>
             </b-col>
           </b-row>
-            
-        </b-container>
+        </b-container>-->
       </b-container>
     </div>
 </template>
 
 <style scoped>
+  #posts {
+    text-align: center;
+    padding: 10px;
+  }
 
   .newPostContainer {
     background-color: white;
@@ -160,6 +218,11 @@ export default {
     text-align: left;
   }
 
+  .content {
+    margin-left: 20px;
+    margin-top: 20px;
+  }
+
   .profilePic img {
     width: 50px;
     height: 50px;
@@ -168,7 +231,8 @@ export default {
   .container {
     background-color: #efefef;
     margin: 20px auto;
-    padding: 5px 0;
+    padding: 10px;
+    border-radius: 10px;
   }
     
   .profilePic, .comments {
@@ -218,7 +282,7 @@ export default {
     border-radius: 15px;
   }
 
-  #newComment {
+  .newComment {
     margin: 0 auto 10px auto;
 
     width: 75%;
