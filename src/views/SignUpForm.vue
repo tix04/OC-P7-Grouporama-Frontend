@@ -245,7 +245,7 @@ export default {
             firstName: {
             required,
             minLength: minLength(3),
-            maxLength: maxLength(10)
+            maxLength: maxLength(20)
             },
             lastName: {
                 required,

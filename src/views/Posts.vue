@@ -64,16 +64,47 @@ export default {
             const commentElement = document.getElementById(`newComment${index}`);
             commentElement.value = '';
           },
-          deleteComment (id) {
-            this.commentID = id;
+          async deleteComment (postID ,commentId, index) {
+            this.postID = postID;
+            this.commentID = commentId;
+            this.initialComments = this.postArray[index].comments;
+
+
+            const commentsDeleted = this.initialComments - 1;
+            let commentAmount = document.querySelectorAll('.icons .totalComments')[index].innerHTML;
+
+            commentAmount = parseInt(commentAmount) - 1;
+            document.querySelectorAll('.icons .totalComments')[index].innerHTML = commentAmount;
+
+            console.log(this.postID);
             console.log(this.commentID);
+            console.log(this.initialComments);
+            console.log(commentsDeleted);
+            console.log(commentAmount);
+
+
+            let commentData = {post_id: this.postID ,comment_id: this.commentID, comments: commentsDeleted};
+            console.log(commentData);
+
+            try {
+              await axios.delete('http://localhost:3000/comments/delete', {data: commentData});
+              let eraseElement = document.getElementById(`comments_${commentId}`);
+              eraseElement.style.display = "none";
+              this.commentID = null;
+              this.postID = null;
+              this.initialComments = 0;
+              
+            } catch (err) {
+              console.log(err);
+            }
+
           },
           async postComment (id, index) {
-            this.newComment = document.getElementById('newComment').value;
+            this.newComment = document.getElementById(`newComment_${index}`).value;
             this.postID = id;
             this.initialComments = this.postArray[index].comments;
 
-            const commentsUpdated = this.initialComments + 1;
+            const commentsAdded = this.initialComments + 1;
             let commentAmount = document.querySelectorAll('.icons .totalComments')[index].innerHTML;
             
             commentAmount = parseInt(commentAmount) + 1;
@@ -82,16 +113,16 @@ export default {
             console.log(this.postID);
             console.log(this.newComment);
             console.log(this.initialComments);
-            console.log(commentsUpdated);
+            console.log(commentsAdded);
             console.log(commentAmount);
 
-            let commentData = {commentContent: this.newComment, postID: this.postID, comments: commentsUpdated };
+            let commentData = {commentContent: this.newComment, postID: this.postID, comments: commentsAdded };
 
             try {
               await axios.post('http://localhost:3000/comments/newComment', commentData);
               this.commentInput = false;
               this.newComment = '';
-              this.postID = '';
+              this.postID = null;
               this.initialComments = 0;
               document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
               //this.$router.go();
@@ -99,6 +130,18 @@ export default {
               console.log(err);
             }
             
+          },
+          setLikes (id) {
+            let likeButton = document.getElementById('likeBtn_'+id);
+            likeButton.classList.toggle('like-active');
+
+            let amount = parseInt(likeButton.textContent);
+            
+            if(amount === 0 ) {
+              likeButton.innerHTML = amount + 1;
+            }else{
+              likeButton.innerHTML = amount - 1;
+            }
           }
         }
     }
@@ -157,8 +200,10 @@ export default {
           <b-button-toolbar>
             <b-button-group class="mr-1">
               <span><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments <span class="totalComments">{{post.comments}}</span></span>
-              <b-button size="sm" variant="outline-info" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</b-button>
-              <b-button size="sm" @click="addComment(index)" variant="outline-secondary" style="border: none;"><b-icon class="commentIcon" icon="plus-circle"></b-icon>Comment</b-button>
+              <button :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up>{{post.likes}}</button>
+              <!--<button v-if="userID === post.likes_array" :id="'likeBtn_'+post.post_id" class="like-active" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</button>
+              <button v-else :id="'likeBtn_'+post.post_id" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</button>-->
+              <b-button size="sm" @click="addComment(index)" variant="outline-secondary" style="border: none;margin-left: 10px;"><b-icon class="commentIcon" icon="plus-circle"></b-icon>Comment</b-button>
             </b-button-group>
           </b-button-toolbar>
         </div>
@@ -180,7 +225,7 @@ export default {
 
         <b-container v-if="post.comments > 0">
             
-          <b-row v-for="comment in post.linked_comments" :key="comment.comment_id" :id="'comments_'+index" class="comments">
+          <b-row v-for="comment in post.linked_comments" :key="comment.comment_id" :id="'comments_'+comment.comment_id" class="comments">
             
             <b-col class="content" cols="12">
               <span class="username">{{comment.username}}</span> 
@@ -189,7 +234,7 @@ export default {
               <br/>
               {{ comment.comment_content}}
               <b-row align-h="end">
-                <b-button @click="deleteComment(comment.comment_id)" size="sm" pill variant="outline-danger" style="font-weight: bold;border: none;">Delete</b-button>
+                <b-button @click="deleteComment(post.post_id ,comment.comment_id, index)" size="sm" pill variant="outline-danger" style="font-weight: bold;border: none;">Delete</b-button>
               </b-row>
             </b-col>
           </b-row>
@@ -286,6 +331,10 @@ export default {
     margin: 0 auto 10px auto;
 
     width: 75%;
+  }
+
+  .like-active {
+    color: #007bff;
   }
     
 </style>
