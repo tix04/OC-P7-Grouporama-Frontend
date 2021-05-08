@@ -156,11 +156,13 @@ export default {
             editLastName: false,
             editAge: false,
             editEmail: false,
-            editPassword: false
+            editPassword: false,
+            userID: ''
         }
     },
     //Use Axios
     async created() {
+        //Set userID get it from token authentication
             try {
                 const response = await axios.get('http://localhost:3000/user/18');
 

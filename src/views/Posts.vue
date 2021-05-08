@@ -21,8 +21,7 @@ export default {
         try {
                 const response = await axios.get('http://localhost:3000/posts');
 
-                //this.postArray = response.data[0];
-                //this.commentArray = response.data[1];
+                
                 let posts = response.data[0];
                 let comments = response.data[1];
                 
@@ -40,26 +39,11 @@ export default {
                 console.error(err);
             }
         },
-        /*computed: { TRY THIS CODE TO RENDER COMMENTS
-          fetchComments: function (id) {
-            for (let i = 0; i < this.postArray.length; i++) {
-              this.postArray[i].comments_content = [];
-                for (let j = 0; j < this.commentArray.length; j++) {
-                  if(this.commentArray[j].post_id === postArray[i].post_id) {
-                    postArray[i].comments_content.push(commentArray[j]);
-                  };
-                }
-              console.log(postArray);
-            }; 
-          }
-        },*/
         methods: {
           addComment(index) {
-            //this.commentInput = true;
             document.querySelectorAll('.commentInputContainer')[index].style.display = 'block';
           },
           cancelComment (index) {
-            //this.commentInput = false;
             document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
             const commentElement = document.getElementById(`newComment${index}`);
             commentElement.value = '';
@@ -125,7 +109,7 @@ export default {
               this.postID = null;
               this.initialComments = 0;
               document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
-              //this.$router.go();
+              //this.$router.go(); Make page reload
             } catch (err) {
               console.log(err);
             }
@@ -142,23 +126,39 @@ export default {
             }else{
               likeButton.innerHTML = amount - 1;
             }
+          },
+          async deletePost(id) {
+            const postID = id;
+            console.log(postID);
+            
+            try {
+              await axios.delete('http://localhost:3000/posts/delete', 
+              {data: {
+                postID: postID
+                }
+              });
+              this.$router.go(/*this.$router.currentRoute*//*'/posts'*/);//Need to make this reload function
+            } catch(err) {
+              console.log(err);
+            }
+            /*
+            
+            try {
+              await axios.delete('http://localhost:3000/posts/delete', {data: postID});
+              const deletedPost = document.getElementById(`post_${id}`);
+              deletePost.remove();
+              this.$router.go();
+            } catch(err) {
+              console.log(err);
+            }
+            */
+          },
+          async editPost(id, content) {
+            this.$router.push({name: 'EditPost', query: {postID: id,postContent: content}});
           }
         }
     }
-    /*Use Fetch
-    //mounted () {
-    async created () {
-        let posts = ' http://localhost:3000/posts';
-
-        fetch(userDetails)
-                .then(function(data) {
-                    return data.json();
-                })
-                .then(function(data) {
-                    console.log(data);
-                })
-    }*/
-//}
+    
 </script>
 <template>
     <div id="posts">
@@ -181,6 +181,14 @@ export default {
           <p>There are no Posts to be displayed</p>
       </b-container>-->
       <b-container v-for="(post, index) in postArray" :key="post.post_id" :id="'post_'+post.post_id"><!--User (post, index) in v-for loop and use index as name attribute to retrieve initial comment and like-->
+        <b-dropdown class="postSettings" size="sm"  variant="outline-secondary" toggle-class="text-decoration-none" no-caret>
+          <template #button-content>
+            <b-icon font-scale="2.5" icon="gear"></b-icon><span class="sr-only">Post Settings</span>
+          </template>
+          <b-dropdown-item @click="editPost(post.post_id, post.post_content)">Edit Post</b-dropdown-item>
+          <b-dropdown-item @click="deletePost(post.post_id)">Delete Post</b-dropdown-item>
+        </b-dropdown>
+        <!--<b-icon class="postSettings" font-scale="3" icon="three-dots"></b-icon>-->
         <div class="profilePic">
           <b-img v-if="post.profile_image === null || post.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle" thumbnail></b-img>
           <b-img v-else :src="post.profile_image" alt="Profile picture" rounded="circle" thumbnail></b-img>
@@ -263,6 +271,13 @@ export default {
     text-align: left;
   }
 
+  .postSettings {
+    position: absolute;
+    right: 2%;
+    border-radius: 5px;
+    padding: 5px;
+  }
+
   .content {
     margin-left: 20px;
     margin-top: 20px;
@@ -274,6 +289,7 @@ export default {
   }
 
   .container {
+    position: relative;
     background-color: #efefef;
     margin: 20px auto;
     padding: 10px;

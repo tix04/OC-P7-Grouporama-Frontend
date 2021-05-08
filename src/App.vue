@@ -28,31 +28,41 @@
         </b-row>
       </b-container>
       
-        <b-navbar toggleable="lg" type="dark" variant="dark">
-          
-          <b-nav-form>
-              <router-link to="/signup"><b-button size="sm" class="my-2 my-sm-0" variant="success">Sign Up</b-button></router-link>
-          </b-nav-form>
-          <b-navbar-nav>
-                <!--<b-nav-item ><router-link to="/"><b-icon-door-open></b-icon-door-open><br/>Login</router-link></b-nav-item>-->
-              <b-nav-item><router-link to="/posts" class="text-white"><b-icon icon="card-text" style="margin-right: 5px;"></b-icon>Posts</router-link></b-nav-item>
-          </b-navbar-nav>
-          <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+       <!-- <b-navbar toggleable="lg" type="dark" variant="dark">-->
+          <b-row align-h="between">
+            <!--<b-nav-form>
+                <router-link to="/signup"><b-button size="sm" class="my-2 my-sm-0" variant="success">Sign Up</b-button></router-link>
+            </b-nav-form>-->
+            <b-col cols="4">
+              <b-navbar-nav>
+                    <!--<b-nav-item ><router-link to="/"><b-icon-door-open></b-icon-door-open><br/>Login</router-link></b-nav-item>-->
+                  <b-nav-item><router-link to="/posts" class="text-white"><b-icon icon="card-text" style="margin-right: 5px;"></b-icon>Posts</router-link></b-nav-item>
+              </b-navbar-nav>
+            </b-col>
+            <b-col cols="4" class="d-flex flex-row-reverse">
+              <b-dropdown id="dropdown-dropright" text="Settings" class="m-2">
+                <b-dropdown-item ><router-link to="/user">User Profile</router-link></b-dropdown-item>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item><router-link to="/">Log In</router-link></b-dropdown-item><!--Change to Log out when connected-->
+              </b-dropdown>
+            </b-col>
+          </b-row>
+          <!--<b-navbar-toggle target="nav-collapse"></b-navbar-toggle>-->
 
-          <b-collapse id="nav-collapse" is-nav>
+          <!--<b-collapse id="nav-collapse" is-nav>
             
             
-          <!-- Right aligned nav items -->
+          //Right aligned nav items
             <b-navbar-nav class="ml-auto">
               <b-nav-item-dropdown text="Settings" right>
                 
                 <b-dropdown-item ><router-link to="/user">User Profile</router-link></b-dropdown-item>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item><router-link to="/">Log In</router-link></b-dropdown-item><!--Change to Log out when connected-->
+                <b-dropdown-item><router-link to="/">Log In</router-link></b-dropdown-item>//Change to Log out when connected
               </b-nav-item-dropdown>
             </b-navbar-nav>
-          </b-collapse>
-        </b-navbar>
+          </b-collapse>-->
+        <!--</b-navbar>-->
     </b-container>
     <router-view />
   </div>

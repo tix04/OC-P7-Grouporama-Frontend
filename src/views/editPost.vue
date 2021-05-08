@@ -1,16 +1,15 @@
 <template>
     <div>
         <b-container class="mt-4">
-            <h2 class="title">Create your Post</h2>
+            <h2 class="title">Edit your Post</h2>
             <b-form @submit.prevent="onSubmit" enctype="multipart/form-data" id="form">
                 <b-form-textarea
                 id="postContent"
-                placeholder="Enter your post contents here..."
+                :placeholder="this.originalContent"
                 rows="5"
                 max-rows="10"
                 class="content"
                 v-model.trim="form.postContent"
-                required
                 >
                 </b-form-textarea>
                 <!--{{this.postContent}}-->
@@ -29,9 +28,10 @@
                         </b-form-file>
                         
                     </b-input-group>
-                    <!--<div style="text-align: left;" class="mt-3">Selected file: {{ this.form.profilePhoto ? this.form.profilePhoto.name : '' }}</div>-->
+                    
                 </b-form-group>
-                <b-button type="submit" variant="success">Submit Post</b-button>
+                <b-button type="submit" variant="success">Edit Post</b-button>
+                <b-button variant="danger" @click="cancelEditPost">Cancel Changes</b-button>
             </b-form>
         </b-container>
         
@@ -43,14 +43,23 @@ export default {
     data() {
         return {
             form: {
-                postContent: '',
+                postContent: ''/*,
                 likes: 0,
-                comments: 0
+                comments: 0*/
             },
             //postContent: '',
             //likes: 0,
-            postImage: null
+            postImage: null,
+            postID: null,
+            originalContent: ''
         }
+    },
+    created () {
+     this.postID = parseInt(this.$route.query.postID);
+     this.originalContent = this.$route.query.postContent;
+     console.log(this.postID);
+     console.log(this.originalContent);
+     console.log(this.form.postContent);
     },
     methods: {
         upload(event) {
@@ -58,23 +67,37 @@ export default {
             console.log(this.postImage);
         },
         async onSubmit() {
+            console.log(this.originalContent, this.form.postContent, this.postImage, this.postID);
+            const updatedContent = this.form.postContent ? this.form.postContent : this.originalContent;
+            console.log(updatedContent);
+            /*const fd = {
+                image: this.postImage,
+                postContent: this.form.postContent,
+                postID: this.postID
+            }*/
             const fd = new FormData();
             fd.append('image', this.postImage);
-            fd.append('postContent', this.form.postContent);
-            fd.append('likes', this.form.likes);
-            fd.append('comments', this.form.comments);
-            //const formData = {postContent: this.form.postContent, likes: this.form.likes, image: this.postImage};
-            console.log(/*formData*/fd);
+            fd.append('postContent', updatedContent);
+            fd.append('postID', this.postID);
+            console.log(fd);
 
             try {
-                await axios.post('http://localhost:3000/posts/newPost', fd);
+                await axios.put('http://localhost:3000/posts/editPost', fd, {
+                    headers: {
+                    'Content-Type': 'multipart/form-data'
+                    }
+                });
                 this.form.postContent = '';
                 this.postImage = null;
+                this.postID = null;
                 this.$router.push('/posts');
             } catch (err) {
                 console.log(err);
             }
             
+        },
+        cancelEditPost() {
+            this.$router.push('/posts');
         }
     }
 }
