@@ -108,7 +108,7 @@ export default {
               this.newComment = '';
               this.postID = null;
               this.initialComments = 0;
-              document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
+              document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';//See if we use this or reload page
               //this.$router.go(); Make page reload
             } catch (err) {
               console.log(err);
@@ -130,19 +130,18 @@ export default {
           async deletePost(id) {
             const postID = id;
             console.log(postID);
-            
             try {
               await axios.delete('http://localhost:3000/posts/delete', 
               {data: {
                 postID: postID
                 }
               });
-              this.$router.go(/*this.$router.currentRoute*//*'/posts'*/);//Need to make this reload function
+              this.$router.go(/*this.$router.currentRoute*//*'/posts'*/);//Test if it works
             } catch(err) {
               console.log(err);
             }
+
             /*
-            
             try {
               await axios.delete('http://localhost:3000/posts/delete', {data: postID});
               const deletedPost = document.getElementById(`post_${id}`);
@@ -164,7 +163,7 @@ export default {
     <div id="posts">
       <b-container style="background: transparent;">
         <div>
-          <a href="#/createPost">
+          <a href="/createPost">
             <b-button class="newPost" block variant="primary">Create new post</b-button>
           </a>
             <!--<a href="/createPost">

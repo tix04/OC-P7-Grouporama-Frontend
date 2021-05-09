@@ -212,21 +212,7 @@ export default {
 
         }
     }
-    /****Use Fetch
-    //mounted () {
-    async created() {
-            
-           let userDetails = "http://localhost:3000/user/1";
-            
-            fetch(userDetails)
-                .b-colen(function(data) {
-                    return data.json();
-                })
-                .b-colen(function(data) {
-                    console.log(data);
-                }) 
-        }*/
-    //}
+    
 </script>
 
 <style scoped>

@@ -2,14 +2,14 @@
   <div>
     <b-container class="bv-example-row">
       <b-row>
-        <b-col md="6" >
+        <b-col md="6"  style="text-align: center;align-self: center;">
           <img src="../assets/icon.png" alt="Grouporama Logo">
         </b-col>
         <b-col md="6">
           <b-container style="margin-top: 22%;">
             <b-jumbotron>
           
-              <b-form>
+              <b-form @submit.prevent="onSubmit">
                 <b-form-group
                 id="userInput1"
                 label="Username"
@@ -42,6 +42,7 @@
                 </b-form-group>
               </b-form>
             </b-jumbotron>
+            <p style="text-align: center;">Don't have an Account.<span id="signUp"><a href="#">Sign Up</a></span></p>
           </b-container>
         </b-col>
       </b-row>
@@ -50,12 +51,13 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: "Login",
   data () {
     return {
-      username: "username1",
-      password: "Pass1234",
+      username: '',
+      password: '',
       validUser: null,
       validPass: null
     }
@@ -66,7 +68,7 @@ export default {
       let userName = document.getElementById('username');
       
       
-      if(userName.value === '' || userName.value !== this.username) {
+      if(userName.value === '') {
         this.validUser = true;
       }else{
         this.validUser = false;
@@ -76,10 +78,26 @@ export default {
     passValidation () {
       let pwd = document.getElementById('password');
 
-      if(pwd.value === ''  || pwd.value !== this.password) {
+      if(pwd.value === '') {
         this.validPass = true;
       }else{
         this.validPass = false;
+      }
+    },
+    async onSubmit () {
+      this.username = document.getElementById('username').value;
+      console.log(this.username);
+      this.password = document.getElementById('password').value;
+      console.log(this.password);
+      let dataAuth = {username: this.username, password: this.password};
+      try {
+        await axios.post('http://localhost:3000/auth/login', dataAuth);
+        this.username = '';
+        this.password = '';
+        document.getElementById('username').value = null;
+        document.getElementById('password').value = null
+      } catch (err) {
+        console.log(err);
       }
     }
   }
