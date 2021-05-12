@@ -8,10 +8,12 @@ export default {
             imageUrl: "../assets/default-user-image.png",
             profile_image: '',
             newComment: '',
+            userID: null,
             postID: null,
+            commentID: null,
             initialComments: 0,
             initialLikes: 0,
-            commentID: null
+            
         }
     },
     components: {
@@ -19,9 +21,17 @@ export default {
     },
     async created () {
         try {
-                const response = await axios.get('http://localhost:3000/posts');
+                const token = localStorage.getItem("token");
+                console.log(token);
 
-                
+                 let headers = 'Bearer ' + token;
+                const response = await axios.get('http://localhost:3000/posts', {
+                  headers: {
+                    "Authorization": headers
+                  }
+                });
+
+                console.log(response.data);
                 let posts = response.data[0];
                 let comments = response.data[1];
                 
@@ -35,6 +45,8 @@ export default {
                 }
                 this.postArray = posts;
                 console.log(this.postArray);
+                this.userID = response.data[2][0].userId;
+                console.log(this.userID);
             } catch(err) {
                 console.error(err);
             }
@@ -115,17 +127,66 @@ export default {
             }
             
           },
-          setLikes (id) {
-            let likeButton = document.getElementById('likeBtn_'+id);
-            likeButton.classList.toggle('like-active');
+          setLikes (id, likesArray) {
+            const token = localStorage.getItem("token");
+            console.log(token);
 
-            let amount = parseInt(likeButton.textContent);
+            let headers = 'Bearer ' + token;
+            let likeAmount = document.getElementById(`likeAmount_${id}`);
+            let likeButton = document.getElementById(`likeBtn_${id}`);
+            likeButton.classList.toggle('like-active');
             
-            if(amount === 0 ) {
-              likeButton.innerHTML = amount + 1;
+            let parsedLikesArray = JSON.parse(likesArray);
+
+            let amount = parseInt(likeAmount.textContent);
+            console.log(parsedLikesArray);
+            console.log(amount);
+            console.log(likeButton);
+
+            //parsedLikesArray.push(amount);
+            //console.log(parsedLikesArray);
+            
+            
+            if(!parsedLikesArray.includes(this.userID) ) {
+              likeAmount.innerHTML = amount + 1;
+              parsedLikesArray.push(this.userID);
+              //console.log(parsedLikesArray);
+
             }else{
-              likeButton.innerHTML = amount - 1;
+              likeAmount.innerHTML = amount - 1;
+              let index = parsedLikesArray.indexOf(this.userID);
+
+              parsedLikesArray.splice(index, 1);
+              //console.log(parsedLikesArray);
             }
+
+            //let sendArray = JSON.stringify(parsedLikesArray);
+            //console.log(sendArray)
+            //console.log(typeof(sendArray));
+            
+            axios.put('http://localhost:3000/posts/setLikes', 
+            {
+                data: {
+                  postID: id,
+                  likesArray: parsedLikesArray
+                }
+              },
+              {
+                headers: {
+                      "Authorization": headers
+                }
+              }
+            )
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+
+              //this.$router.go();
+            
+            //axios.put update upload parsedLikedArray to setLikes endpoin
           },
           async deletePost(id) {
             const postID = id;
@@ -140,19 +201,8 @@ export default {
             } catch(err) {
               console.log(err);
             }
-
-            /*
-            try {
-              await axios.delete('http://localhost:3000/posts/delete', {data: postID});
-              const deletedPost = document.getElementById(`post_${id}`);
-              deletePost.remove();
-              this.$router.go();
-            } catch(err) {
-              console.log(err);
-            }
-            */
           },
-          async editPost(id, content) {
+          editPost(id, content) {
             this.$router.push({name: 'EditPost', query: {postID: id,postContent: content}});
           }
         }
@@ -180,7 +230,7 @@ export default {
           <p>There are no Posts to be displayed</p>
       </b-container>-->
       <b-container v-for="(post, index) in postArray" :key="post.post_id" :id="'post_'+post.post_id"><!--User (post, index) in v-for loop and use index as name attribute to retrieve initial comment and like-->
-        <b-dropdown class="postSettings" size="sm"  variant="outline-secondary" toggle-class="text-decoration-none" no-caret>
+        <b-dropdown v-if="post.user_id === userID" class="postSettings" size="sm"  variant="outline-secondary" toggle-class="text-decoration-none" no-caret>
           <template #button-content>
             <b-icon font-scale="2.5" icon="gear"></b-icon><span class="sr-only">Post Settings</span>
           </template>
@@ -207,7 +257,7 @@ export default {
           <b-button-toolbar>
             <b-button-group class="mr-1">
               <span><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments <span class="totalComments">{{post.comments}}</span></span>
-              <button :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up>{{post.likes}}</button>
+              <button :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id, post.likes_array)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up><span :id="'likeAmount_'+post.post_id">{{post.likes}}</span></button>
               <!--<button v-if="userID === post.likes_array" :id="'likeBtn_'+post.post_id" class="like-active" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</button>
               <button v-else :id="'likeBtn_'+post.post_id" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</button>-->
               <b-button size="sm" @click="addComment(index)" variant="outline-secondary" style="border: none;margin-left: 10px;"><b-icon class="commentIcon" icon="plus-circle"></b-icon>Comment</b-button>
@@ -240,7 +290,7 @@ export default {
               <b-img v-else :src="comment.profile_image" alt="Profile picture" rounded="circle"></b-img>
               <br/>
               {{ comment.comment_content}}
-              <b-row align-h="end">
+              <b-row align-h="end" v-if="post.user_id === userID">
                 <b-button @click="deleteComment(post.post_id ,comment.comment_id, index)" size="sm" pill variant="outline-danger" style="font-weight: bold;border: none;">Delete</b-button>
               </b-row>
             </b-col>

@@ -84,18 +84,37 @@ export default {
         this.validPass = false;
       }
     },
-    async onSubmit () {
+    /*async*/ onSubmit () {
+      
       this.username = document.getElementById('username').value;
       console.log(this.username);
       this.password = document.getElementById('password').value;
       console.log(this.password);
       let dataAuth = {username: this.username, password: this.password};
       try {
-        await axios.post('http://localhost:3000/auth/login', dataAuth);
+        axios.post('http://localhost:3000/auth/login', dataAuth)
+        .then( function (response) {
+          console.log(response)
+          const token = response.data.token;
+           localStorage.setItem('token', token);
+          
+        })
+        .catch(err => console.log(err));
+
+       
         this.username = '';
         this.password = '';
+        
         document.getElementById('username').value = null;
-        document.getElementById('password').value = null
+        document.getElementById('password').value = null;
+        this.$router.push({name: 'Posts'});
+        /*await axios.post('http://localhost:3000/auth/login', dataAuth);
+        this.username = '';
+        this.password = '';
+        
+        document.getElementById('username').value = null;
+        document.getElementById('password').value = null;
+        //this.$router.push({name: 'Posts', query: {postID: id,postContent: content}});*/
       } catch (err) {
         console.log(err);
       }

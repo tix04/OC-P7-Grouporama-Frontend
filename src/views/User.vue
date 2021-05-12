@@ -164,7 +164,12 @@ export default {
     async created() {
         //Set userID get it from token authentication
             try {
-                const response = await axios.get('http://localhost:3000/user/18');
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+                const response = await axios.get('http://localhost:3000/user/userProfile', {
+                    headers: {
+                        "Authorization": headers}
+                });
 
                 this.userDetails = response.data;
                 console.log(this.userDetails);
