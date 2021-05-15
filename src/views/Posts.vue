@@ -37,6 +37,7 @@ export default {
                 
                 for (let i = 0; i < posts.length; i++) {
                   posts[i].linked_comments = [];
+                  
                   for (let j =0; j< comments.length; j++) {
                     if(comments[j].post_id === posts[i].post_id) {
                       posts[i].linked_comments.push(comments[j]);
@@ -89,6 +90,7 @@ export default {
               this.commentID = null;
               this.postID = null;
               this.initialComments = 0;
+              this.$router.go();
               
             } catch (err) {
               console.log(err);
@@ -121,13 +123,15 @@ export default {
               this.postID = null;
               this.initialComments = 0;
               document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';//See if we use this or reload page
-              //this.$router.go(); Make page reload
+              this.$router.go();
             } catch (err) {
               console.log(err);
             }
             
           },
           setLikes (id, likesArray) {
+
+            //TODO: If User is in array, like button is set to blue right away and then toggle
             const token = localStorage.getItem("token");
             console.log(token);
 
@@ -142,27 +146,17 @@ export default {
             console.log(parsedLikesArray);
             console.log(amount);
             console.log(likeButton);
-
-            //parsedLikesArray.push(amount);
-            //console.log(parsedLikesArray);
-            
             
             if(!parsedLikesArray.includes(this.userID) ) {
               likeAmount.innerHTML = amount + 1;
               parsedLikesArray.push(this.userID);
-              //console.log(parsedLikesArray);
 
             }else{
               likeAmount.innerHTML = amount - 1;
               let index = parsedLikesArray.indexOf(this.userID);
 
               parsedLikesArray.splice(index, 1);
-              //console.log(parsedLikesArray);
             }
-
-            //let sendArray = JSON.stringify(parsedLikesArray);
-            //console.log(sendArray)
-            //console.log(typeof(sendArray));
             
             axios.put('http://localhost:3000/posts/setLikes', 
             {
@@ -184,20 +178,31 @@ export default {
               console.log(error);
             })
 
-              //this.$router.go();
+              this.$router.go();
             
-            //axios.put update upload parsedLikedArray to setLikes endpoin
+            
           },
           async deletePost(id) {
             const postID = id;
+            const token = localStorage.getItem("token");
+            console.log(token);
+
+            let headers = 'Bearer ' + token;
+            
             console.log(postID);
             try {
               await axios.delete('http://localhost:3000/posts/delete', 
               {data: {
                 postID: postID
                 }
+              },
+              {
+                headers: {
+                      "Authorization": headers
+                }
               });
-              this.$router.go(/*this.$router.currentRoute*//*'/posts'*/);//Test if it works
+
+              this.$router.go();//Test if it works
             } catch(err) {
               console.log(err);
             }
@@ -257,7 +262,8 @@ export default {
           <b-button-toolbar>
             <b-button-group class="mr-1">
               <span><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments <span class="totalComments">{{post.comments}}</span></span>
-              <button :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id, post.likes_array)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up><span :id="'likeAmount_'+post.post_id">{{post.likes}}</span></button>
+              <button v-if="JSON.parse(post.likes_array).includes(userID)" class="like-active" :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id, post.likes_array)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up><span :id="'likeAmount_'+post.post_id">{{post.likes}}</span></button>
+              <button v-else :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id, post.likes_array)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up><span :id="'likeAmount_'+post.post_id">{{post.likes}}</span></button>
               <!--<button v-if="userID === post.likes_array" :id="'likeBtn_'+post.post_id" class="like-active" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</button>
               <button v-else :id="'likeBtn_'+post.post_id" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</button>-->
               <b-button size="sm" @click="addComment(index)" variant="outline-secondary" style="border: none;margin-left: 10px;"><b-icon class="commentIcon" icon="plus-circle"></b-icon>Comment</b-button>

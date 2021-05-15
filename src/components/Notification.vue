@@ -30,13 +30,26 @@ export default {
         }
     },
     async created () {
+
         try {
-            let postSummary = await axios.get('http://localhost:3000/posts/postCount');
+            const token = localStorage.getItem("token");
+            console.log(token);
+
+            let headers = 'Bearer ' + token;
+
+            let postSummary = await axios.get('http://localhost:3000/posts/postCount', {
+                headers: {
+                    "Authorization": headers
+                }
+            });
             
-            
-            this.totalPosts = postSummary.data[0].postsCount;
-            this.viewedPosts = postSummary.data[0].viewed_posts;
-            console.log(this.totalPosts);
+            let postsTotal = postSummary.data[0][0];
+            let viewedPosts = postSummary.data[1][0]
+            console.log(postSummary.data[0][0]);
+            this.totalPosts = postsTotal.postsCount;
+            this.viewedPosts = viewedPosts.viewed_posts;
+
+            console.log(this.totalPosts, this.viewedPosts);
         }catch(err) {
             console.error(err);
         }

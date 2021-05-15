@@ -47,22 +47,7 @@
               </b-dropdown>
             </b-col>
           </b-row>
-          <!--<b-navbar-toggle target="nav-collapse"></b-navbar-toggle>-->
-
-          <!--<b-collapse id="nav-collapse" is-nav>
-            
-            
-          //Right aligned nav items
-            <b-navbar-nav class="ml-auto">
-              <b-nav-item-dropdown text="Settings" right>
-                
-                <b-dropdown-item ><router-link to="/user">User Profile</router-link></b-dropdown-item>
-                <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item><router-link to="/">Log In</router-link></b-dropdown-item>//Change to Log out when connected
-              </b-nav-item-dropdown>
-            </b-navbar-nav>
-          </b-collapse>-->
-        <!--</b-navbar>-->
+          
     </b-container>
     <router-view />
   </div>
