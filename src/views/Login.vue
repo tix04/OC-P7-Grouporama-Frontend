@@ -96,6 +96,9 @@ export default {
         .then( function (response) {
           console.log(response)
           const token = response.data.token;
+          console.log(token);
+          //this.$store.state.online = true;
+          //this.$store.state.userProfileImage = response.data.profileImage;
            localStorage.setItem('token', token);
           
         })

@@ -1,16 +1,12 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import Users from '../data/users.js'
-import Posts from '../data/posts.js'
-import Comments from '../data/comments.js'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    Users,
-    Posts,
-    Comments
+    online : false,
+    userProfileImage: ''
   },
   getters:{
   },
@@ -20,4 +16,4 @@ export default new Vuex.Store({
   },
   modules: {
   }
-})
+});

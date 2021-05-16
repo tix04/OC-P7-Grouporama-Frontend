@@ -22,7 +22,10 @@
                   </svg>
               </b-navbar-brand>
           </b-col>
-          <b-col class="profilePic">
+          <b-col v-if="$store.state.online" class="profilePic">
+            <img class="img-fluid rounded-circle" :src="$store.state.userProfileImage" alt="Profile Picture">
+          </b-col>
+          <b-col v-else class="profilePic">
             <img class="img-fluid rounded-circle" src="./assets/default-user-image.png" alt="Profile Picture">
           </b-col>
         </b-row>
@@ -43,7 +46,8 @@
               <b-dropdown id="dropdown-dropright" text="Settings" class="m-2">
                 <b-dropdown-item ><router-link to="/user">User Profile</router-link></b-dropdown-item>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item><router-link to="/">Log In</router-link></b-dropdown-item><!--Change to Log out when connected-->
+                <b-dropdown-item v-if="$store.state.online"><router-link to="/">Log Out</router-link></b-dropdown-item>
+                <b-dropdown-item v-else><router-link to="/">Log In</router-link></b-dropdown-item>
               </b-dropdown>
             </b-col>
           </b-row>
@@ -54,7 +58,9 @@
 </template>
 
 <script>
-
+export default {
+  
+}
 </script>
 
 <style lang="scss">
