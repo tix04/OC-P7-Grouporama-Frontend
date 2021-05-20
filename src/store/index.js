@@ -1,16 +1,29 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    online : false,
-    userProfileImage: ''
+    userID: 0,
+    userProfilePicture: null,
+    online: false,
+    postsData: []
   },
-  getters:{
+  getters: {
   },
   mutations: {
+    retrieveNewsFeedData (state, data) {
+      state.postsData = data[0];
+      state.userID = data[1];
+      state.userProfilePicture = data[2];
+      state.online = true;
+
+      console.log(state.postsData);
+      console.log(state.userID);
+      console.log(state.userProfilePicture);
+    }
   },
   actions: {
   },

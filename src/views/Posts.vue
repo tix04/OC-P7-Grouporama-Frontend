@@ -1,10 +1,11 @@
 <script>
 import axios from 'axios'
 import Notification from '../components/Notification.vue'
+import store from '../store/index'
 export default {
     data () {
         return {
-            postArray: [],
+            
             imageUrl: "../assets/default-user-image.png",
             profile_image: '',
             newComment: '',
@@ -20,34 +21,42 @@ export default {
       Notification
     },
     async created () {
-        try {
+        try { 
+                let posts, comments, userID, userProfileImage, postArray ,data;
                 const token = localStorage.getItem("token");
                 console.log(token);
 
-                 let headers = 'Bearer ' + token;
-                const response = await axios.get('http://localhost:3000/posts', {
+                let headers = 'Bearer ' + token;
+                await axios.get('http://localhost:3000/posts', {
                   headers: {
                     "Authorization": headers
                   }
-                });
-
-                console.log(response.data);
-                let posts = response.data[0];
-                let comments = response.data[1];
-                
-                for (let i = 0; i < posts.length; i++) {
-                  posts[i].linked_comments = [];
+                }).then(function (response) {
+                  console.log(response.data);
+                  posts = response.data[0];
+                  comments = response.data[1];
+                  userID = response.data[2][0].userId;
+                  userProfileImage = response.data[2][0].profileImage;
                   
-                  for (let j =0; j< comments.length; j++) {
-                    if(comments[j].post_id === posts[i].post_id) {
-                      posts[i].linked_comments.push(comments[j]);
+                  for (let i = 0; i < posts.length; i++) {
+                    posts[i].linked_comments = [];
+
+                    for (let j = 0; j < comments.length; j++) {
+                      if(comments[j].post_id === posts[i].post_id) {
+                        posts[i].linked_comments.push(comments[j]);
+                      }
                     }
                   }
-                }
-                this.postArray = posts;
-                console.log(this.postArray);
-                this.userID = response.data[2][0].userId;
-                console.log(this.userID);
+                  
+                  postArray = posts;
+
+                  data =[postArray, userID, userProfileImage];
+                  console.log(data);
+                })
+                .catch(err => console.log(err));
+
+                store.commit('retrieveNewsFeedData', data);
+                
             } catch(err) {
                 console.error(err);
             }
@@ -89,8 +98,9 @@ export default {
               eraseElement.style.display = "none";
               this.commentID = null;
               this.postID = null;
+              this.userID = null;
               this.initialComments = 0;
-              this.$router.go();
+              //this.$router.go();
               
             } catch (err) {
               console.log(err);
@@ -101,6 +111,7 @@ export default {
             this.newComment = document.getElementById(`newComment_${index}`).value;
             this.postID = id;
             this.initialComments = this.postArray[index].comments;
+            this.userID = store.state.userID;
 
             const commentsAdded = this.initialComments + 1;
             let commentAmount = document.querySelectorAll('.icons .totalComments')[index].innerHTML;
@@ -113,8 +124,9 @@ export default {
             console.log(this.initialComments);
             console.log(commentsAdded);
             console.log(commentAmount);
+            console.log(this.userID);
 
-            let commentData = {commentContent: this.newComment, postID: this.postID, comments: commentsAdded };
+            let commentData = {commentContent: this.newComment, postID: this.postID, comments: commentsAdded, userID: this.userID };
 
             try {
               await axios.post('http://localhost:3000/comments/newComment', commentData);
@@ -123,64 +135,71 @@ export default {
               this.postID = null;
               this.initialComments = 0;
               document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';//See if we use this or reload page
-              this.$router.go();
+              //this.$router.go();
             } catch (err) {
               console.log(err);
             }
             
           },
-          setLikes (id, likesArray) {
+          async setLikes (id, /*likesArray*/) {
+            
+            //Initial likes Array state. Used to check if user has already liked or not
+            let parsedLikesArray;
+            let likeButton = document.getElementById(`likeBtn_${id}`);
+            let likeAmount = document.getElementById(`likeAmount_${id}`);
+            likeButton.classList.toggle('like-active');
+            
 
-            //TODO: If User is in array, like button is set to blue right away and then toggle
+            let amount = parseInt(likeAmount.textContent);
+
+            //Retrieve Token Authentication
             const token = localStorage.getItem("token");
             console.log(token);
 
             let headers = 'Bearer ' + token;
-            let likeAmount = document.getElementById(`likeAmount_${id}`);
-            let likeButton = document.getElementById(`likeBtn_${id}`);
-            likeButton.classList.toggle('like-active');
-            
-            let parsedLikesArray = JSON.parse(likesArray);
-
-            let amount = parseInt(likeAmount.textContent);
-            console.log(parsedLikesArray);
-            console.log(amount);
-            console.log(likeButton);
-            
-            if(!parsedLikesArray.includes(this.userID) ) {
-              likeAmount.innerHTML = amount + 1;
-              parsedLikesArray.push(this.userID);
-
-            }else{
-              likeAmount.innerHTML = amount - 1;
-              let index = parsedLikesArray.indexOf(this.userID);
-
-              parsedLikesArray.splice(index, 1);
-            }
-            
-            axios.put('http://localhost:3000/posts/setLikes', 
-            {
-                data: {
-                  postID: id,
-                  likesArray: parsedLikesArray
-                }
-              },
-              {
-                headers: {
-                      "Authorization": headers
-                }
+            let url = `http://localhost:3000/posts/${id}`;
+            await axios.get(url, {
+              headers: {
+                "Authorization": headers
               }
-            )
-            .then(function (response) {
-              console.log(response);
-            })
-            .catch(function (error) {
-              console.log(error);
-            })
+            }
+            ).then(function (response) {
+                console.log(response.data[0].likes_array, typeof(response.data[0].likes_array));
+                parsedLikesArray = JSON.parse(response.data[0].likes_array);
 
-              this.$router.go();
-            
-            
+                if(!parsedLikesArray.includes(store.state.userID) ) { //TODO: Just for rendering, not database, make like button function correctly without reload
+                  likeAmount.innerHTML = amount + 1;
+                  parsedLikesArray.push(store.state.userID);
+
+                }else{
+                  likeAmount.innerHTML = amount - 1;
+                  let index = parsedLikesArray.indexOf(store.state.userID);
+
+                  parsedLikesArray.splice(index, 1);
+                }
+              
+                axios.put('http://localhost:3000/posts/setLikes', 
+                {
+                  data: {
+                    postID: id,
+                    likesArray: parsedLikesArray
+                  }
+                },
+                {
+                  headers: {
+                        "Authorization": headers
+                  }
+                }
+                )
+                .then(function (response) {
+                  console.log(response);
+                })
+                .catch(function (error) {
+                  console.log(error);
+                })
+
+            });
+
           },
           async deletePost(id) {
             const postID = id;
@@ -234,8 +253,8 @@ export default {
         <h1 style="font-size: 1.5rem; font-weight: bold;">Grouporama Social Network</h1>
           <p>There are no Posts to be displayed</p>
       </b-container>-->
-      <b-container v-for="(post, index) in postArray" :key="post.post_id" :id="'post_'+post.post_id"><!--User (post, index) in v-for loop and use index as name attribute to retrieve initial comment and like-->
-        <b-dropdown v-if="post.user_id === userID" class="postSettings" size="sm"  variant="outline-secondary" toggle-class="text-decoration-none" no-caret>
+      <b-container v-for="(post, index) in $store.state.postsData" :key="post.post_id" :id="'post_'+post.post_id"><!--User (post, index) in v-for loop and use index as name attribute to retrieve initial comment and like-->
+        <b-dropdown v-if="post.user_id === $store.state.userID" class="postSettings" size="sm"  variant="outline-secondary" toggle-class="text-decoration-none" no-caret>
           <template #button-content>
             <b-icon font-scale="2.5" icon="gear"></b-icon><span class="sr-only">Post Settings</span>
           </template>
@@ -262,7 +281,7 @@ export default {
           <b-button-toolbar>
             <b-button-group class="mr-1">
               <span><b-icon-chat-left-text font-scale="1.2"></b-icon-chat-left-text> Comments <span class="totalComments">{{post.comments}}</span></span>
-              <button v-if="JSON.parse(post.likes_array).includes(userID)" class="like-active" :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id, post.likes_array)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up><span :id="'likeAmount_'+post.post_id">{{post.likes}}</span></button>
+              <button v-if="JSON.parse(post.likes_array).includes($store.state.userID)" class="like-active" :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id, post.likes_array)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up><span :id="'likeAmount_'+post.post_id">{{post.likes}}</span></button>
               <button v-else :id="'likeBtn_'+post.post_id" @click="setLikes(post.post_id, post.likes_array)" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up><span :id="'likeAmount_'+post.post_id">{{post.likes}}</span></button>
               <!--<button v-if="userID === post.likes_array" :id="'likeBtn_'+post.post_id" class="like-active" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</button>
               <button v-else :id="'likeBtn_'+post.post_id" style="border: none;"><b-icon-hand-thumbs-up font-scale="1.2"></b-icon-hand-thumbs-up> {{post.likes}}</button>-->
@@ -291,17 +310,17 @@ export default {
           <b-row v-for="comment in post.linked_comments" :key="comment.comment_id" :id="'comments_'+comment.comment_id" class="comments">
             
             <b-col class="content" cols="12">
-              <span class="username">{{comment.username}}</span> 
               <b-img v-if="comment.profile_image === null || comment.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle"></b-img>
               <b-img v-else :src="comment.profile_image" alt="Profile picture" rounded="circle"></b-img>
+              <span class="username">{{comment.username}}</span> 
               <br/>
               {{ comment.comment_content}}
-              <b-row align-h="end" v-if="post.user_id === userID">
+              <b-row align-h="end" v-if="post.user_id === $store.state.userID">
                 <b-button @click="deleteComment(post.post_id ,comment.comment_id, index)" size="sm" pill variant="outline-danger" style="font-weight: bold;border: none;">Delete</b-button>
               </b-row>
             </b-col>
           </b-row>
-        </b-container>-->
+        </b-container>
       </b-container>
     </div>
 </template>
@@ -385,10 +404,11 @@ export default {
   }
 
   .comments img {
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     border: 1px solid white;
     border-radius: 50%;
+    margin-right: 5px;
   }
 
   .comments .content {

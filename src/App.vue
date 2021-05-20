@@ -22,12 +22,13 @@
                   </svg>
               </b-navbar-brand>
           </b-col>
-          <b-col v-if="$store.state.online" class="profilePic">
-            <img class="img-fluid rounded-circle" :src="$store.state.userProfileImage" alt="Profile Picture">
-          </b-col>
-          <b-col v-else class="profilePic">
+          <b-col v-if="$store.state.userProfilePicture === null" class="profilePic">
             <img class="img-fluid rounded-circle" src="./assets/default-user-image.png" alt="Profile Picture">
           </b-col>
+          <b-col v-else class="profilePic">
+            <img class="img-fluid rounded-circle" :src="$store.state.userProfilePicture" alt="Profile Picture">
+          </b-col>
+          
         </b-row>
       </b-container>
       
@@ -39,7 +40,7 @@
             <b-col cols="4">
               <b-navbar-nav>
                     <!--<b-nav-item ><router-link to="/"><b-icon-door-open></b-icon-door-open><br/>Login</router-link></b-nav-item>-->
-                  <b-nav-item><router-link to="/posts" class="text-white"><b-icon icon="card-text" style="margin-right: 5px;"></b-icon>Posts</router-link></b-nav-item>
+                  <b-nav-item><router-link to="/posts" class="text-white"><b-icon icon="card-text" style="margin-right: 5px;"></b-icon>News Feed</router-link></b-nav-item>
               </b-navbar-nav>
             </b-col>
             <b-col cols="4" class="d-flex flex-row-reverse">

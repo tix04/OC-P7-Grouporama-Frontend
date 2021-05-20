@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-container class="bv-example-row">
+      {{$store.state.test}}
       <b-row>
         <b-col md="6"  style="text-align: center;align-self: center;">
           <img src="../assets/icon.png" alt="Grouporama Logo">
@@ -52,6 +53,7 @@
 
 <script>
 import axios from 'axios';
+//import store from '../store/index';
 export default {
   name: "Login",
   data () {
@@ -84,43 +86,33 @@ export default {
         this.validPass = false;
       }
     },
-    /*async*/ onSubmit () {
+    async onSubmit () {
+      let token;
       
       this.username = document.getElementById('username').value;
-      console.log(this.username);
       this.password = document.getElementById('password').value;
-      console.log(this.password);
       let dataAuth = {username: this.username, password: this.password};
-      try {
-        axios.post('http://localhost:3000/auth/login', dataAuth)
+      
+      await axios.post('http://localhost:3000/auth/login', dataAuth)
         .then( function (response) {
           console.log(response)
-          const token = response.data.token;
+          token = response.data.token;
           console.log(token);
-          //this.$store.state.online = true;
-          //this.$store.state.userProfileImage = response.data.profileImage;
-           localStorage.setItem('token', token);
-          
+
         })
         .catch(err => console.log(err));
 
+        localStorage.setItem("token", token);
        
         this.username = '';
         this.password = '';
         
         document.getElementById('username').value = null;
         document.getElementById('password').value = null;
-        this.$router.push({name: 'Posts'});
-        /*await axios.post('http://localhost:3000/auth/login', dataAuth);
-        this.username = '';
-        this.password = '';
         
-        document.getElementById('username').value = null;
-        document.getElementById('password').value = null;
-        //this.$router.push({name: 'Posts', query: {postID: id,postContent: content}});*/
-      } catch (err) {
-        console.log(err);
-      }
+        this.$router.push({name: 'Posts'});
+        
+     
     }
   }
 }
