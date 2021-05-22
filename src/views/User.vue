@@ -27,7 +27,7 @@
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="New First Name"
                             ></b-form-input>
-                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="success" @click="updateUserData">Save</b-button>
                             <b-button variant="danger" @click="hideFirstName">Cancel</b-button>
                         </b-form>
                     </div>
@@ -46,7 +46,7 @@
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="New Last Name"
                             ></b-form-input>
-                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="success" @click="updateUserData">Save</b-button>
                             <b-button variant="danger" @click="hideLastName">Cancel</b-button>
                         </b-form>
                     </div>
@@ -65,7 +65,7 @@
                             type="number"
                             class="mb-2 mr-sm-2 mb-sm-0"
                             ></b-form-input>
-                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="success" @click="updateUserData">Save</b-button>
                             <b-button variant="danger" @click="hideAge">Cancel</b-button>
                         </b-form>
                     </div>
@@ -85,7 +85,7 @@
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="xyz@mail.com"
                             ></b-form-input>
-                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="success" @click="updateUserData">Save</b-button>
                             <b-button variant="danger" @click="hideEmail">Cancel</b-button>
                         </b-form>
                     </div>
@@ -104,7 +104,7 @@
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="New Username"
                             ></b-form-input>
-                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="success" @click="updateUserData">Save</b-button>
                             <b-button variant="danger" @click="hideUsername">Cancel</b-button>
                         </b-form>
                     </div>
@@ -128,7 +128,7 @@
                             type="password"
                             class="mb-2 mr-sm-2 mb-sm-0"
                             ></b-form-input>
-                            <b-button variant="success" @click="inputFieldHidden">Save</b-button>
+                            <b-button variant="success" @click="updateUserData">Save</b-button>
                             <b-button variant="danger" @click="hidePassword">Cancel</b-button>
                         </b-form>
                     </div>

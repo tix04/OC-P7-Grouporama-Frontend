@@ -51,7 +51,6 @@ export default {
                   postArray = posts;
 
                   data =[postArray, userID, userProfileImage];
-                  console.log(data);
                 })
                 .catch(err => console.log(err));
 
@@ -100,7 +99,7 @@ export default {
               this.postID = null;
               this.userID = null;
               this.initialComments = 0;
-              //this.$router.go();
+             
               
             } catch (err) {
               console.log(err);
@@ -108,37 +107,38 @@ export default {
 
           },
           async postComment (id, index) {
-            this.newComment = document.getElementById(`newComment_${index}`).value;
-            this.postID = id;
-            this.initialComments = this.postArray[index].comments;
-            this.userID = store.state.userID;
-
-            const commentsAdded = this.initialComments + 1;
-            let commentAmount = document.querySelectorAll('.icons .totalComments')[index].innerHTML;
             
-            commentAmount = parseInt(commentAmount) + 1;
-            document.querySelectorAll('.icons .totalComments')[index].innerHTML = commentAmount;
-            
-            console.log(this.postID);
-            console.log(this.newComment);
-            console.log(this.initialComments);
-            console.log(commentsAdded);
-            console.log(commentAmount);
-            console.log(this.userID);
+            //Retrieve new comment Content and Initial Comment Amount for the Appropriate Post.
+            let newComment = document.getElementById(`newComment_${index}`).value;
+            let postID = id;
+            let userID = store.state.userID;
+            let initialCommentAmount = document.querySelectorAll('.icons .totalComments')[index].textContent;
 
-            let commentData = {commentContent: this.newComment, postID: this.postID, comments: commentsAdded, userID: this.userID };
+            let parsedCommentAmount = parseInt(initialCommentAmount);
+            let updatedCommentAmount = ++parsedCommentAmount;
+            console.log(this.newComment, postID, userID, updatedCommentAmount);
 
-            try {
-              await axios.post('http://localhost:3000/comments/newComment', commentData);
-              this.commentInput = false;
-              this.newComment = '';
-              this.postID = null;
-              this.initialComments = 0;
-              document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';//See if we use this or reload page
-              //this.$router.go();
-            } catch (err) {
+            /*
+            //Retrieve Token Authentication
+            const token = localStorage.getItem("token");
+            console.log(token);
+
+            let headers = 'Bearer ' + token;*/
+
+            let commentData = {commentContent: newComment, postID: postID, comments: updatedCommentAmount, userID: userID };
+
+            await axios.post('http://localhost:3000/comments/newComment', commentData/*, {
+              headers: {
+                "Authorization": headers
+              }
+            }*/).then(function () {
+                document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';//See if we use this or reload page
+                newComment = '';
+                store.dispatch('updateComments', postID);
+
+            }).catch(function (err) {
               console.log(err);
-            }
+            })
             
           },
           async setLikes (id, /*likesArray*/) {
@@ -162,8 +162,7 @@ export default {
               headers: {
                 "Authorization": headers
               }
-            }
-            ).then(function (response) {
+            }).then(function (response) {
                 console.log(response.data[0].likes_array, typeof(response.data[0].likes_array));
                 parsedLikesArray = JSON.parse(response.data[0].likes_array);
 
