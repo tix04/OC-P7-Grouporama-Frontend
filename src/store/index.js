@@ -9,7 +9,8 @@ export default new Vuex.Store({
     userID: 0,
     userProfilePicture: null,
     online: false,
-    postsData: []
+    postsData: [],
+    userDetail: []
   },
   getters: {
   },
@@ -32,6 +33,13 @@ export default new Vuex.Store({
           state.postsData[i].linked_comments = response.data;
         }
       }
+    },
+    updateUser(state, data) {
+      state.userDetail = data;
+      state.userID = data.user_id;
+      state.userProfilePicture = data.profile_image;
+      console.log(data);
+      console.log(state.userDetail);
     }
   },
   actions: {
@@ -44,10 +52,34 @@ export default new Vuex.Store({
         "Authorization": headers
       }
       }*/).then(function (response) {
+
         console.log(response);
-          commit('updateComments', {response, postID});
+        commit('updateComments', {response, postID});
+
       }).catch(function(error) {
+
         console.log(error);
+
+      });
+    },
+    async updateUser({commit}) {
+      
+      const token = localStorage.getItem("token");
+      let headers = 'Bearer ' + token;
+
+      await axios.get('http://localhost:3000/user/userProfile', {
+        headers: {
+          "Authorization": headers
+        }
+      }).then(function (response) {
+
+        let data = response.data[0];
+        commit('updateUser', data);
+
+      }).catch(function(error) {
+
+        console.log(error);
+
       });
     }
   

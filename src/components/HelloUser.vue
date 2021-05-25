@@ -3,9 +3,6 @@
       
     
     <div>
-      <div>
-        <img src="../assets/icon-left-font-monochrome-black.png" alt="Company Logo">
-      </div>
       <h1>
         {{ msg + ' username' }}
       </h1>

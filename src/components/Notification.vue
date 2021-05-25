@@ -59,8 +59,14 @@ export default {
         
         try {
             
-            await axios.put('http://localhost:3000/posts/newPostStatus/', {
-                count: this.totalPosts
+            const token = localStorage.getItem("token");
+            console.log(token);
+
+            let headers = 'Bearer ' + token;
+            await axios.put('http://localhost:3000/posts/newPostStatus/', {count: this.totalPosts}, {
+                headers: {
+                    "Authorization": headers
+                }
             });
 
             console.log('setting new viewed posts is done')

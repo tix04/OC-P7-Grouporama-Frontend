@@ -298,7 +298,6 @@ export default {
             }
         }
         
-
     },
     methods:{
         togglePassword() {
@@ -307,11 +306,11 @@ export default {
             if(show.type === 'password') {
                 show.type = 'text';
                 this.icon1 = 'eye-slash';
-                //toggleButton.setAttribute('icon', 'eye-slash') = 'Hide Password'
+               
             }else {
                 show.type = 'password';
                 this.icon1 = 'eye';
-                //toggleButton.setAttribute('icon', 'eye') = 'Show Password'
+                
             }
         },
         togglePwdCheck() {
@@ -326,19 +325,11 @@ export default {
             }
         },
         upload(event) {
-            //let image = document.getElementById('profilePhoto');
-            this.profilePhoto = /*image.files[0];*//*event.target.files[0]*/event.target.files[0];
+            
+            this.profilePhoto = event.target.files[0];
             console.log(this.profilePhoto);
-            /*axios.post('http://localhost:3000/images', {images: this.profilePhoto})
-            .then((res) => {
-                console.log(res)
-            })
-            .catch((err) => {
-                console.log(err)
-            })*/
         },
-        async onSubmit(/*event*/) {
-            /*event.preventDefault();*/
+        async onSubmit() {
             const fd = new FormData();
             fd.append('image', this.profilePhoto);
             fd.append('first_name', this.form.firstName);
@@ -348,9 +339,6 @@ export default {
             fd.append('username', this.form.username);
             fd.append('password', this.form.password);
             console.log(fd);
-            /*const form = JSON.stringify(this.form);*/
-            //console.log(fd, this.form.profilePhoto);
-            //console.log({user: form, image: this.profilePhoto})
             try {
                 await axios.post('http://localhost:3000/user/newUser', fd);
                 this.form.firstName = '';
@@ -360,25 +348,11 @@ export default {
                 this.form.username = '';
                 this.form.password = '';
                 this.form.passwordCheck = '';
-                this.profilePhoto = null,
-                window.location.href = '#/posts';
+                this.profilePhoto = null
+                //window.location.href = '#/posts';
             } catch (err) {
                 console.log(err);
             }
-            /*await axios.post('http://localhost:3000/user/newUser',
-             //{user: form, image: this.profilePhoto}
-             fd, 
-             {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then((res) => {
-                console.log(res)
-            })
-            .catch((err) => {
-                console.log(err)
-            })*/
         }
 
     }

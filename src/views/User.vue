@@ -1,20 +1,44 @@
 <template>
     <div>
         <b-container>
+
             <div class="profilePicture">
-                <b-row>
-                    <b-col class="username">
-                        <b-img thumbnail rounded :src="this.userDetails[0].profile_image" alt="User Profile Picture"></b-img>
-                        <br/>
-                        <span style="margin-left: 20px;">{{ this.userDetails[0].username }}</span>
-                    </b-col>
-                </b-row>
-                
+                    <div class="image">
+                        <b-img class="image__img" thumbnail rounded :src="$store.state.userDetail.profile_image" alt="User Profile Picture"></b-img>
+                        <div class="image__overlay">
+                            <div class="edit__container">
+                                <b-button @click="changeProfilePicture" class="edit__button"><b-icon icon="camera"></b-icon></b-button>
+                            </div>
+                        </div>
+                    </div>
+                    <span>{{ $store.state.userDetail.username }}</span>
             </div>
+            <div v-show="this.editProfilePicture" class="modificationForm">
+
+                <h5>Please Select a New photo:</h5>
+                <br/>
+
+                <b-form inline @submit.prevent="updateProfilePhoto" enctype="multipart/form-data" id="form">
+                    <label class="sr-only" for="newProfilePicture">Select Photo:</label>
+                    <b-form-file
+                    id="newProfilePicture"
+                    ref="profilePicture"
+                    placeholder="Select Photo"
+                    accept="image/*"
+                    @change="saveImage"
+                    class="mb-2 mr-sm-2 mb-sm-0"
+                    ></b-form-file>
+                    <div style="margin-top: 10px;">
+                        <b-button type="submit" variant="success">Save</b-button>
+                        <b-button variant="danger" @click="hideProfilePicture">Cancel</b-button>
+                    </div>
+                </b-form>
+            </div>
+
             <b-container>
                     <b-row class="userInfo">
                         <b-col class="label">First Name</b-col>
-                        <b-col>{{ this.userDetails[0].first_name }}</b-col>
+                        <b-col>{{ $store.state.userDetail.first_name }}</b-col>
                         <b-col class="edit"><b-button @click="changeFirstName" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
                     </b-row>
                     <div v-show="this.editFirstName" class="modificationForm">
@@ -27,13 +51,13 @@
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="New First Name"
                             ></b-form-input>
-                            <b-button variant="success" @click="updateUserData">Save</b-button>
+                            <b-button variant="success" @click="updateFirstName">Save</b-button>
                             <b-button variant="danger" @click="hideFirstName">Cancel</b-button>
                         </b-form>
                     </div>
                     <b-row class="userInfo">
                         <b-col class="label">Last Name</b-col>
-                        <b-col>{{ this.userDetails[0].last_name }}</b-col>
+                        <b-col>{{ $store.state.userDetail.last_name }}</b-col>
                         <b-col class="edit"><b-button @click="changeLastName" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
                     </b-row>
                     <div v-show="this.editLastName" class="modificationForm">
@@ -46,13 +70,13 @@
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="New Last Name"
                             ></b-form-input>
-                            <b-button variant="success" @click="updateUserData">Save</b-button>
+                            <b-button variant="success" @click="updateLastName">Save</b-button>
                             <b-button variant="danger" @click="hideLastName">Cancel</b-button>
                         </b-form>
                     </div>
                     <b-row class="userInfo">
                         <b-col class="label">Age</b-col>
-                        <b-col>{{ this.userDetails[0].age }}</b-col>
+                        <b-col>{{ $store.state.userDetail.age }}</b-col>
                         <b-col class="edit"><b-button @click="changeAge" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
                     </b-row>
                     <div v-show="this.editAge" class="modificationForm">
@@ -65,13 +89,13 @@
                             type="number"
                             class="mb-2 mr-sm-2 mb-sm-0"
                             ></b-form-input>
-                            <b-button variant="success" @click="updateUserData">Save</b-button>
+                            <b-button variant="success" @click="updateAge">Save</b-button>
                             <b-button variant="danger" @click="hideAge">Cancel</b-button>
                         </b-form>
                     </div>
                     <b-row class="userInfo">
                         <b-col class="label">Email</b-col>
-                        <b-col>{{ this.userDetails[0].email }}</b-col>
+                        <b-col>{{ $store.state.userDetail.email }}</b-col>
                         <b-col class="edit"><b-button @click="changeEmail" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
                     </b-row>
                     <div v-show="this.editEmail" class="modificationForm">
@@ -85,13 +109,13 @@
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="xyz@mail.com"
                             ></b-form-input>
-                            <b-button variant="success" @click="updateUserData">Save</b-button>
+                            <b-button variant="success" @click="updateEmail">Save</b-button>
                             <b-button variant="danger" @click="hideEmail">Cancel</b-button>
                         </b-form>
                     </div>
                     <b-row class="userInfo">
                         <b-col class="label">Username</b-col>
-                        <b-col>{{ this.userDetails[0].username }}</b-col>
+                        <b-col>{{ $store.state.userDetail.username }}</b-col>
                         <b-col class="edit"><b-button @click="changeUsername" variant="danger">Edit<b-icon icon="pencil"></b-icon></b-button></b-col>
                     </b-row>
                     <div v-show="this.editUsername" class="modificationForm">
@@ -104,7 +128,7 @@
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="New Username"
                             ></b-form-input>
-                            <b-button variant="success" @click="updateUserData">Save</b-button>
+                            <b-button variant="success" @click="updateUsername">Save</b-button>
                             <b-button variant="danger" @click="hideUsername">Cancel</b-button>
                         </b-form>
                     </div>
@@ -128,7 +152,7 @@
                             type="password"
                             class="mb-2 mr-sm-2 mb-sm-0"
                             ></b-form-input>
-                            <b-button variant="success" @click="updateUserData">Save</b-button>
+                            <b-button variant="success" @click="updatePassword">Save</b-button>
                             <b-button variant="danger" @click="hidePassword">Cancel</b-button>
                         </b-form>
                     </div>
@@ -147,10 +171,13 @@
 </template>
 <script>
 import axios from 'axios';
+import store from '../store/index';
 export default {
     data () {
         return {
             userDetails: [],
+            newProfilePhoto: null,
+            editProfilePicture: false,
             editUsername: false,
             editFirstName: false,
             editLastName: false,
@@ -168,16 +195,21 @@ export default {
                 let headers = 'Bearer ' + token;
                 const response = await axios.get('http://localhost:3000/user/userProfile', {
                     headers: {
-                        "Authorization": headers}
+                        "Authorization": headers
+                    }
                 });
-
-                this.userDetails = response.data;
-                console.log(this.userDetails);
+                
+                let data = response.data[0];
+                store.commit('updateUser', data);
+                console.log(data);
             } catch(err) {
                 console.error(err);
             }
         },
         methods: {
+            changeProfilePicture() {
+                this.editProfilePicture = true;
+            },
             changeFirstName() {
                 this.editFirstName = true;
             },
@@ -196,6 +228,11 @@ export default {
              changePassword() {
                 this.editPassword = true;
             },
+            hideProfilePicture() {
+                this.editProfilePicture = false;
+                this.newProfilePhoto = null;
+                document.getElementById('form').reset();
+            },
             hideFirstName() {
                 this.editFirstName = false;
             },
@@ -213,8 +250,163 @@ export default {
             },
              hidePassword() {
                 this.editPassword = false;
-            }
+            },
+            saveImage(event) {
+                this.newProfilePhoto = event.target.files[0];
+                console.log(this.newProfilePhoto);
+            },
+            async updateProfilePhoto() {
 
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+
+                const fd = new FormData();
+                fd.append('userId', store.state.userID);
+                fd.append('image', this.newProfilePhoto);
+                console.log(fd);
+                
+
+                await axios.put('http://localhost:3000/user/profilePhoto', fd, {
+                    headers: {
+                        "Authorization": headers
+                    }
+                })
+                .then(function(response) {
+                    console.log(response);
+                    store.dispatch('updateUser');
+
+                }).catch(function(err) {
+                    console.log(err);
+                });
+
+                this.editProfilePicture = false;
+                this.newProfilePhoto = null;
+                document.getElementById('form').reset();
+            },
+            async updateFirstName() {
+                let newData = document.getElementById('newFirstName').value;
+                console.log(newData);
+
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+
+                await axios.put('http://localhost:3000/user/firstName', {firstName: newData} , {
+                     headers: {
+                        "Authorization": headers
+                    }
+                }).then(function () {
+
+                    store.dispatch('updateUser');
+
+                }).catch (function (err) {
+                    console.log(err);
+                })
+
+                document.getElementById('newFirstName').value = '';
+                this.editFirstName = false;
+            },
+            async updateLastName() {
+                
+                let newData = document.getElementById('newLastName').value;
+                console.log(newData);
+                
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+
+                await axios.put('http://localhost:3000/user/lastName', {lastName: newData} , {
+                     headers: {
+                        "Authorization": headers
+                    }
+                }).then(function () {
+
+                    store.dispatch('updateUser');
+
+                }).catch (function (err) {
+                    console.log(err);
+                })
+
+                document.getElementById('newLastName').value = '';
+                this.editLastName = false;
+            },
+            async updateAge() {
+                let newData = document.getElementById('newAge').value;
+                console.log(newData);
+                
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+
+                await axios.put('http://localhost:3000/user/age', {age: newData} , {
+                     headers: {
+                        "Authorization": headers
+                    }
+                }).then(function () {
+
+                    store.dispatch('updateUser');
+
+                }).catch (function (err) {
+                    console.log(err);
+                });
+
+                document.getElementById('newAge').value = null;
+                this.editAge = false;
+            },
+            async updateEmail() {
+                let newData = document.getElementById('newEmail').value;
+                console.log(newData);
+                
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+
+                await axios.put('http://localhost:3000/user/email', {email: newData} , {
+                     headers: {
+                        "Authorization": headers
+                    }
+                }).then(function () {
+
+                    store.dispatch('updateUser');
+
+                }).catch (function (err) {
+                    console.log(err);
+                });
+
+                document.getElementById('newEmail').value = '';
+                this.editEmail = false;
+            },
+            async updateUsername() {
+                let newData = document.getElementById('newUsername').value;
+                console.log(newData);
+                
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+
+                await axios.put('http://localhost:3000/user/username', {username: newData} , {
+                     headers: {
+                        "Authorization": headers
+                    }
+                }).then(function () {
+
+                    store.dispatch('updateUser');
+
+                }).catch (function (err) {
+                    console.log(err);
+                });
+
+                document.getElementById('newUsername').value = '';
+                this.editAge = false;
+            }
+            /*TODO: 
+            1 - Add update for password
+            2 - Validation for frontend for each input
+            3 -brcrypt password
+            4 -Logout(Delete Token and reset State Data)
+            5 -Adjust validation frontend
+            6 -Validation back end
+            7 -Add visual text for Comments Posted, Deleted, User Data Updated
+            8 -Modfiy CSS based on yahya recommendations: create post inline not block, Grouporama welcome erase, Color for unseen posts and block hidden if no new posts
+            9 -Add edit for profile photo
+            10 -Create User check if username and email already exist. Need to be unique(Check backend on blur if email and username already exist)
+            11 - Delete Post(Delete comments with post ID, then delete specific post). Delete user (Delete comments with userID and POST ID, delete Post with user ID, Delete Specific User and Log out)
+            */
         }
     }
     
@@ -227,16 +419,64 @@ button {
 
 .profilePicture {
     margin: 10px auto 50px auto;
-}
-
-img {
-    width: 200px;
-}
-
-.username {
     font-size: 1.5rem;
     font-weight: bolder;
     text-align: left;
+}
+
+.image {
+    position: relative;
+    width: 200px;
+}
+
+.image__img {
+    width: 100%;
+    display: block;
+}
+
+.image__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width : 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .25s;
+}
+
+.image__overlay > * {
+    transform: translateY(20px);
+    transition: transform .25s;
+}
+
+.image__overlay:hover {
+    opacity: 1;
+}
+
+.image__overlay:hover > * {
+    transform: translateY(0);
+}
+
+.edit__container {
+    font-size: 2em;
+}
+
+.edit__button {
+    font-size: 1.35rem;
+    margin-top: .25em;
+    background: transparent;
+    border: none;
+    
+}
+
+.edit__button:hover, .edit__button:focus {
+    background: transparent;
 }
 
 .userInfo {
@@ -255,8 +495,8 @@ img {
     text-align: right;
 }
 
-.b-icon {
-    margin-left: 10px;
+.edit__icon .b-icon {
+    margin-left: 0;
 }
 
 .modificationForm {

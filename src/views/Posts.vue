@@ -35,8 +35,8 @@ export default {
                   console.log(response.data);
                   posts = response.data[0];
                   comments = response.data[1];
-                  userID = response.data[2][0].userId;
-                  userProfileImage = response.data[2][0].profileImage;
+                  userProfileImage = response.data[2][0].profile_image;
+                  userID = response.data[3][0].userId;
                   
                   for (let i = 0; i < posts.length; i++) {
                     posts[i].linked_comments = [];
@@ -51,6 +51,7 @@ export default {
                   postArray = posts;
 
                   data =[postArray, userID, userProfileImage];
+                  console.log(userProfileImage);
                 })
                 .catch(err => console.log(err));
 

@@ -43,7 +43,7 @@
                 </b-form-group>
               </b-form>
             </b-jumbotron>
-            <p style="text-align: center;">Don't have an Account.<span id="signUp"><a href="#">Sign Up</a></span></p>
+            <p style="text-align: center;">Don't have an Account.<span id="signUp"><router-link to="/signup">Sign Up</router-link></span></p>
           </b-container>
         </b-col>
       </b-row>
