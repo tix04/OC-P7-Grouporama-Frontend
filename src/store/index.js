@@ -40,6 +40,13 @@ export default new Vuex.Store({
       state.userProfilePicture = data.profile_image;
       console.log(data);
       console.log(state.userDetail);
+    },
+    logOut(state) {
+      state.userID = 0;
+      state.userProfilePicture = null;
+      state.online = false;
+      state.postsData = [];
+      state.userDetail = [];
     }
   },
   actions: {
@@ -81,6 +88,9 @@ export default new Vuex.Store({
         console.log(error);
 
       });
+    },
+    logOut({commit}) {
+      commit('logOut');
     }
   
   },

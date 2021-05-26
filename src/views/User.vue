@@ -120,7 +120,7 @@
                     </b-row>
                     <div v-show="this.editUsername" class="modificationForm">
                         <h5>Please Enter your new Username:</h5><br/>
-
+                        <p id="usernameValidation"></p>
                         <b-form inline>
                             <label class="sr-only" for="newUsername">Username:</label>
                             <b-form-input
@@ -251,6 +251,27 @@ export default {
              hidePassword() {
                 this.editPassword = false;
             },
+            /*async validateUsername() {
+                let userName = document.getElementById('newUsername').value;
+                console.log(userName);
+                
+                await axios.get('http://localhost:3000/auth/verifyUsername')
+                .then(function(response) {
+                    console.log(response);
+
+                    for(let i = 0; i < response.length; i++) {
+                        
+                        if(response.data[i].username == document.getElementByID('newUsername').value) {
+                            console.log('Username already exists. Please try again')
+                        }else {
+                            console.log('Username can be used')
+                        }
+                    }
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
+            },*/
             saveImage(event) {
                 this.newProfilePhoto = event.target.files[0];
                 console.log(this.newProfilePhoto);
@@ -393,17 +414,51 @@ export default {
 
                 document.getElementById('newUsername').value = '';
                 this.editAge = false;
+            },
+            async updatePassword () {
+
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+
+                let password = document.getElementById('newPassword').value;
+                let confirmPassword = document.getElementById('confirmPassword').value;
+                let newData;
+
+                console.log(password, confirmPassword);
+
+                if(password === confirmPassword) {
+                    newData = password;
+
+                    await axios.put('http://localhost:3000/user/password', {newPassword: newData}, {
+                    headers: {
+                        "Authorization": headers
+                    }
+                    }).then(function (response) {
+                        console.log(response);
+                        store.dispatch('updateUser');
+
+                    }).catch (function (err) {
+                        console.log(err);
+                    });
+
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    this.editPassword = false;
+                }else {
+                    window.alert("Password does not match");
+                }
+
             }
             /*TODO: 
             1 - Add update for password
             2 - Validation for frontend for each input
             3 -brcrypt password
-            4 -Logout(Delete Token and reset State Data)
+            4 -Logout(Delete Token and reset State Data) ***FINISHED***
             5 -Adjust validation frontend
             6 -Validation back end
             7 -Add visual text for Comments Posted, Deleted, User Data Updated
             8 -Modfiy CSS based on yahya recommendations: create post inline not block, Grouporama welcome erase, Color for unseen posts and block hidden if no new posts
-            9 -Add edit for profile photo
+            9 -Add edit for profile photo *****FINISHED*****
             10 -Create User check if username and email already exist. Need to be unique(Check backend on blur if email and username already exist)
             11 - Delete Post(Delete comments with post ID, then delete specific post). Delete user (Delete comments with userID and POST ID, delete Post with user ID, Delete Specific User and Log out)
             */

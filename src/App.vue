@@ -47,7 +47,7 @@
               <b-dropdown id="dropdown-dropright" text="Settings" class="m-2">
                 <b-dropdown-item ><router-link to="/user">User Profile</router-link></b-dropdown-item>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item v-if="$store.state.online"><router-link to="/">Log Out</router-link></b-dropdown-item>
+                <b-dropdown-item  @click="logOut" v-if="$store.state.online"><router-link to="/">Log Out</router-link></b-dropdown-item>
                 <b-dropdown-item v-else><router-link to="/">Log In</router-link></b-dropdown-item>
               </b-dropdown>
             </b-col>
@@ -59,8 +59,14 @@
 </template>
 
 <script>
+import store from './store/index'
 export default {
-  
+  methods: {
+    logOut() {
+      localStorage.removeItem('token');
+      store.dispatch('logOut');
+    }
+  }
 }
 </script>
 
