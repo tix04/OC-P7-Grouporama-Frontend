@@ -17,7 +17,7 @@
 
                 <h5>Please Select a New photo:</h5>
                 <br/>
-
+                <p></p>
                 <b-form inline @submit.prevent="updateProfilePhoto" enctype="multipart/form-data" id="form">
                     <label class="sr-only" for="newProfilePicture">Select Photo:</label>
                     <b-form-file
@@ -43,11 +43,12 @@
                     </b-row>
                     <div v-show="this.editFirstName" class="modificationForm">
                         <h5>Please Enter your first name:</h5><br/>
-
+                        <p></p>
                         <b-form inline>
                             <label class="sr-only" for="newFirstName">First Name:</label>
                             <b-form-input
                             id="newFirstName"
+                            type="text"
                             class="mb-2 mr-sm-2 mb-sm-0"
                             placeholder="New First Name"
                             ></b-form-input>
@@ -62,7 +63,7 @@
                     </b-row>
                     <div v-show="this.editLastName" class="modificationForm">
                         <h5>Please Enter your last name:</h5><br/>
-
+                        <p></p>
                         <b-form inline>
                             <label class="sr-only" for="newLastNAme">Last Name:</label>
                             <b-form-input
@@ -81,7 +82,7 @@
                     </b-row>
                     <div v-show="this.editAge" class="modificationForm">
                         <h5>Please Enter your age:</h5><br/>
-
+                        <p></p>
                         <b-form inline>
                             <label class="sr-only" for="newAge">Age:</label>
                             <b-form-input
@@ -100,7 +101,7 @@
                     </b-row>
                     <div v-show="this.editEmail" class="modificationForm">
                         <h5>Please Enter your new email address:</h5><br/>
-
+                        <p></p>
                         <b-form inline>
                             <label class="sr-only" for="newEmail">email:</label>
                             <b-form-input
@@ -138,7 +139,7 @@
                     </b-row>
                     <div v-show="this.editPassword" class="modificationForm">
                         <h5>Please Enter your new Password:</h5><br/>
-
+                        <p></p>
                         <b-form inline>
                             <label class="sr-only" for="newPassword">Password:</label>
                             <b-form-input
@@ -187,7 +188,6 @@ export default {
             userID: ''
         }
     },
-    //Use Axios
     async created() {
         //Set userID get it from token authentication
             try {

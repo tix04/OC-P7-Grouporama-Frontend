@@ -11,13 +11,15 @@
                         id="profilePhoto"
                         ref="profilePicture"
                         placeholder="Select file"
-                        accept="image/*"
+                        accept=".jpeg, .jpg, .png, .bmp, .gif"
                         @change="upload"
                         >
                         </b-form-file>
                         
                     </b-input-group>
-                    <!--<div style="text-align: left;" class="mt-3">Selected file: {{ this.form.profilePhoto ? this.form.profilePhoto.name : '' }}</div>-->
+                    <span v-if="profilePhoto === null"></span>
+                    <span v-else-if="invalidFile" style="color: #dc3545;">Only Image Files Are Allowed(jpeg, jpg, png, gif)</span>
+                    <span v-else style="color: #28a745;">File is Valid</span>
                 </b-form-group>
                 <b-form-group
                 id="userInput1"
@@ -40,13 +42,9 @@
                             <span v-if="!$v.form.firstName.required">First name is required</span>
                             <span v-if="!$v.form.firstName.minLength">First name must have at least {{ $v.form.firstName.$params.minLength.min }} letters.</span>
                             <span v-if="!$v.form.firstName.maxLength">First Name must have at most {{ $v.form.firstName.$params.maxLength.max }} letters.</span>
+                            <span v-if="!$v.form.firstName.nameValidator">First Name can only contain letter characters.</span>
                         </div>
 
-                        <!--<b-input-group-prepend is-text>
-                            <b-icon class="icon" icon="check-circle" font-scale="1.5"></b-icon>
-                            <b-icon class="icon" icon="exclamation-circle" font-scale="1.5"></b-icon>
-                        </b-input-group-prepend>-->
-                        
                     </b-input-group>
                 </b-form-group>
 
@@ -71,10 +69,7 @@
                             <span v-if="!$v.form.lastName.minLength">Last name must have at least {{ $v.form.lastName.$params.minLength.min }} letters.</span>
                             <span v-if="!$v.form.lastName.maxLength">Last Name must have at most {{ $v.form.lastName.$params.maxLength.max }} letters.</span>
                         </div>
-                        <!--<b-input-group-prepend is-text>
-                            <b-icon class="icon" icon="check-circle" font-scale="1.5"></b-icon>
-                            <b-icon class="icon" icon="exclamation-circle" font-scale="1.5"></b-icon>
-                        </b-input-group-prepend>-->
+                        
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
@@ -96,10 +91,7 @@
                             <span v-if="!$v.form.age.between">Age must be between {{ $v.form.age.$params.between.min }} and {{$v.form.age.$params.between.max }}</span>
                             
                         </div>
-                        <!--<b-input-group-prepend is-text>
-                            <b-icon class="icon" icon="check-circle" font-scale="1.5"></b-icon>
-                            <b-icon class="icon" icon="exclamation-circle" font-scale="1.5"></b-icon>
-                        </b-input-group-prepend>-->
+                        
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
@@ -120,12 +112,10 @@
                         <div class="valid-feedback">Your email is valid</div>
                         <div class="invalid-feedback">
                             <span v-if="!$v.form.email.required">Email is required</span>
-                            <span v-if="!$v.form.email.isUnique">This email is not valid or is already registered</span>
+                            <span v-if="!$v.form.email.email">This is not the correct email format</span>
+                            <span v-if="!$v.form.email.isUnique">This email is already used by another user</span>
                         </div>
-                        <!--<b-input-group-prepend is-text>
-                            <b-icon class="icon" icon="check-circle" font-scale="1.5"></b-icon>
-                            <b-icon class="icon" icon="exclamation-circle" font-scale="1.5"></b-icon>
-                        </b-input-group-prepend>-->
+                        
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
@@ -149,10 +139,7 @@
                             <span v-if="!$v.form.username.isUnique">username is already used by another user</span>
                             <span v-if="!$v.form.username.minLength">username must have at least {{ $v.form.username.$params.minLength.min }} letters.</span>
                         </div>
-                        <!--<b-input-group-prepend is-text>
-                            <b-icon class="icon" icon="check-circle" font-scale="1.5"></b-icon>
-                            <b-icon class="icon" icon="exclamation-circle" font-scale="1.5"></b-icon>
-                        </b-input-group-prepend>-->
+                       
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
@@ -178,10 +165,7 @@
                             <span v-if="!$v.form.password.required">Password is required</span>
                             <span v-if="!$v.form.password.minLength">Password must have at least {{ $v.form.password.$params.minLength.min }} letters.</span>
                         </div>
-                        <!--<b-input-group-prepend is-text>
-                            <b-icon class="icon" icon="check-circle" font-scale="1.5"></b-icon>
-                            <b-icon class="icon" icon="exclamation-circle" font-scale="1.5"></b-icon>
-                        </b-input-group-prepend>-->
+                        
                     </b-input-group>
                 </b-form-group>
                 <b-form-group
@@ -205,10 +189,7 @@
                         <div class="invalid-feedback">
                             <span v-if="!$v.form.passwordCheck.sameAsPassword">Password must be identical</span>
                         </div>
-                        <!--<b-input-group-prepend is-text>
-                            <b-icon class="icon" icon="check-circle" font-scale="1.5"></b-icon>
-                            <b-icon class="icon" icon="exclamation-circle" font-scale="1.5"></b-icon>
-                        </b-input-group-prepend>-->
+                        
                     </b-input-group>
                 </b-form-group>
                 <b-button type="submit" variant="success">Submit</b-button>
@@ -221,7 +202,9 @@
 
 <script>
 import axios from 'axios'
-import { required, minLength, maxLength, between, email, sameAs } from 'vuelidate/lib/validators'
+import { required, helpers,minLength, maxLength, between, sameAs } from 'vuelidate/lib/validators';
+const nameValidator = helpers.regex('onlyText', /^[a-z]*$/i);
+const email = helpers.regex('emailFormat', /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i);
 export default {
     data() {
         return {
@@ -237,55 +220,55 @@ export default {
                 passwordCheck: '',
                 
             },
-           profilePhoto: null 
+           profilePhoto: null,
+           invalidFile: false
         }
     },
     validations: {
         form:{
             firstName: {
             required,
+            nameValidator,
             minLength: minLength(3),
             maxLength: maxLength(20)
             },
             lastName: {
                 required,
+                nameValidator,
                 minLength: minLength(3),
                 maxLength: maxLength(20)
             },
             email: {
                 required,
                 email,
-                isUnique(value) {
-                    if(value === '') {
-                        return true
+                async isUnique() {
+                    const validator = await axios.get('http://localhost:3000/auth/verifyEmail');
+                    let emailList = validator.data;
+
+                    if(emailList.includes(this.form.email)) {
+                        return false;
+                    }else {
+                        return true;
                     }
 
-                    var regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            resolve(regex.test(value))
-                        }, 350 + Math.random() * 300)
-                    })
-                    
                 }
+                   
             },
             age: {
                 between: between(18, 60)
             },
             username: {
                 required,
-                isUnique(value) {
-                    if(value === '') {
-                        return true
+                async isUnique() {
+                    const validator = await axios.get('http://localhost:3000/auth/verifyUsername');
+                    let usernameList = validator.data;
+
+                    if(usernameList.includes(this.form.username)) {
+                        return false;
+                    }else {
+                        return true;
                     }
 
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            resolve(typeof value === 'string' && value.length % 2 !==0)
-                        }, 350 + Math.random() * 300)
-                    })
-                    
                 },
                 minLength: minLength(5)
             },
@@ -327,8 +310,16 @@ export default {
         upload(event) {
             
             this.profilePhoto = event.target.files[0];
-            console.log(this.profilePhoto);
-        },
+           
+            let regex = /image\/jpeg|image\/jpg|image\/png|image\/gif/;
+
+            if (!regex.test(this.profilePhoto.type)) {
+                this.invalidFile = true;
+                document.getElementById('profilePhoto').value = null;
+                document.getElementById('profilePhoto').style.borderColor = "#dc3545";
+            }
+
+        },            
         async onSubmit() {
             const fd = new FormData();
             fd.append('image', this.profilePhoto);
