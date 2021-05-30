@@ -11,7 +11,7 @@
                         id="profilePhoto"
                         ref="profilePicture"
                         placeholder="Select file"
-                        accept=".jpeg, .jpg, .png, .bmp, .gif"
+                        accept=".jpeg, .jpg, .png, .gif"
                         @change="upload"
                         >
                         </b-form-file>
@@ -274,7 +274,7 @@ export default {
             },
             password: {
                 required,
-                minLength: minLength(8)
+                minLength: minLength(6)
             },
             passwordCheck: {
                 sameAsPassword: sameAs('password')
@@ -317,6 +317,9 @@ export default {
                 this.invalidFile = true;
                 document.getElementById('profilePhoto').value = null;
                 document.getElementById('profilePhoto').style.borderColor = "#dc3545";
+            }else {
+                this.invalidFile = false;
+                document.getElementById('profilePhoto').style.border = "2px solid green";
             }
 
         },            
@@ -331,7 +334,7 @@ export default {
             fd.append('password', this.form.password);
             console.log(fd);
             try {
-                await axios.post('http://localhost:3000/user/newUser', fd);
+                const newUser = await axios.post('http://localhost:3000/user/newUser', fd);
                 this.form.firstName = '';
                 this.form.lastName = '';
                 this.form.age = 0;
@@ -339,11 +342,21 @@ export default {
                 this.form.username = '';
                 this.form.password = '';
                 this.form.passwordCheck = '';
-                this.profilePhoto = null
-                //window.location.href = '#/posts';
+                this.profilePhoto = null;
+                this.invalidFile = false;
+                document.getElementById('profilePhoto').value = null;
+                document.getElementById('form').reset();
+                
+                
+                localStorage.setItem("token", newUser.data.token);
+                window.location.href = '#/posts';
+
             } catch (err) {
                 console.log(err);
             }
+        },
+        onReset() {
+            this.$router.go();
         }
 
     }

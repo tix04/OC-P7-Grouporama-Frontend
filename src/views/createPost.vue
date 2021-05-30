@@ -13,7 +13,6 @@
                 required
                 >
                 </b-form-textarea>
-                <!--{{this.postContent}}-->
                 <b-form-group
                 id=userInput1
                 label="Upload an image (Optional)"
@@ -23,15 +22,18 @@
                         id="postImage"
                         ref="postImage"
                         placeholder="Select file"
-                        accept="image/*"
+                        accept=".jpeg, .jpg, .png, .gif"
                         @change="upload"
                         >
                         </b-form-file>
                         
                     </b-input-group>
-                    <!--<div style="text-align: left;" class="mt-3">Selected file: {{ this.form.profilePhoto ? this.form.profilePhoto.name : '' }}</div>-->
+                    <span v-if="postImage === null"></span>
+                    <span v-else-if="invalidFile" style="color: #dc3545;">Only Image Files Are Allowed(jpeg, jpg, png, gif)</span>
+                    <span v-else style="color: #28a745;">File is Valid</span>
                 </b-form-group>
                 <b-button type="submit" variant="success">Submit Post</b-button>
+                <b-button type="reset" variant="danger" @click="onReset">Cancel</b-button>
             </b-form>
         </b-container>
         
@@ -47,29 +49,54 @@ export default {
                 likes: 0,
                 comments: 0
             },
-            //postContent: '',
-            //likes: 0,
-            postImage: null
+            postImage: null,
+            invalidFile: false
         }
     },
+
     methods: {
         upload(event) {
             this.postImage = event.target.files[0];
-            console.log(this.postImage);
+
+            let regex = /image\/jpeg|image\/jpg|image\/png|image\/gif/;
+
+            if(!regex.test(this.postImage.type)) {
+                this.invalidFile = true;
+                document.getElementById('postImage').value = null;
+                document.getElementById('postImage').style.borderColor = "#dc3545";
+            }else {
+                this.invalidFile = false;
+                document.getElementById('postImage').style.border = "2px solid green";
+            }
+
+        },
+        onReset() {
+            this.postImage = null;
+            this.$router.push('/posts');
         },
         async onSubmit() {
+            const token = localStorage.getItem("token");
+            let headers = 'Bearer ' + token;
+
             const fd = new FormData();
             fd.append('image', this.postImage);
             fd.append('postContent', this.form.postContent);
             fd.append('likes', this.form.likes);
             fd.append('comments', this.form.comments);
-            //const formData = {postContent: this.form.postContent, likes: this.form.likes, image: this.postImage};
-            console.log(/*formData*/fd);
+            
+            console.log(fd);
 
             try {
-                await axios.post('http://localhost:3000/posts/newPost', fd);
+                await axios.post('http://localhost:3000/posts/newPost', fd, {
+                    headers: {
+                        "Authorization": headers
+                    }
+                });
                 this.form.postContent = '';
                 this.postImage = null;
+                this.invalidFile = false;
+
+                document.getElementById('form').reset();
                 this.$router.push('/posts');
             } catch (err) {
                 console.log(err);

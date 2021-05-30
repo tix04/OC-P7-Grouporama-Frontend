@@ -4,7 +4,7 @@
     
     <div>
       <h1>
-        {{ msg + ' username' }}
+        {{ msg + ' ' + $store.state.userName }}
       </h1>
     </div>
     <hr>

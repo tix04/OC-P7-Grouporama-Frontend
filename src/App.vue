@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <!--Nav-->
-    <b-container id="nav">
+    <b-container fluid id="nav">
     
-      <b-container id="logo">
+      <b-container fluid id="logo">
         <b-row>
           <b-col>
             <b-navbar-brand href="#">
@@ -38,9 +38,9 @@
                 <router-link to="/signup"><b-button size="sm" class="my-2 my-sm-0" variant="success">Sign Up</b-button></router-link>
             </b-nav-form>-->
             <b-col cols="4">
-              <b-navbar-nav>
+              <b-navbar-nav style="margin-right: 15px;">
                     <!--<b-nav-item ><router-link to="/"><b-icon-door-open></b-icon-door-open><br/>Login</router-link></b-nav-item>-->
-                  <b-nav-item><router-link to="/posts" class="text-white"><b-icon icon="card-text" style="margin-right: 5px;"></b-icon>News Feed</router-link></b-nav-item>
+                  <b-nav-item><router-link to="/posts" class="text-white"><b-icon icon="card-text" style="margin-right: 5px;"></b-icon>Posts</router-link></b-nav-item>
               </b-navbar-nav>
             </b-col>
             <b-col cols="4" class="d-flex flex-row-reverse">
@@ -106,6 +106,10 @@ export default {
     width: 50px;
   }
   
+}
+
+.btn.dropdown-toggle.btn-secondary {
+  margin: 0;
 }
 
 </style>

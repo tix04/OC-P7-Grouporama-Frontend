@@ -1,53 +1,50 @@
 <template>
   <div>
-    <b-container class="bv-example-row">
-      {{$store.state.test}}
-      <b-row>
-        <b-col md="6"  style="text-align: center;align-self: center;">
-          <img src="../assets/icon.png" alt="Grouporama Logo">
-        </b-col>
-        <b-col md="6">
-          <b-container style="margin-top: 22%;">
-            <b-jumbotron>
-          
-              <b-form @submit.prevent="onSubmit">
-                <b-form-group
-                id="userInput1"
-                label="Username"
-                label-for="username"
+    
+    <b-container style="margin-top: 50px;max-width: 720px;">
+      <b-row align-h="center">
+        <b-col fluid="sm" col sm="8">
+          <b-img fluid center :src="require('../assets/icon-left-font-modified.png')" alt="Grouporama Logo"></b-img>
+          <b-jumbotron>
+            
+            <b-form @submit.prevent="onSubmit">
+              <b-form-group
+              id="userInput1"
+              label="Username"
+              label-for="username"
+              >
+                <b-form-input
+                id="username"
+                type="text"
+                placeholder="Username"
+                v-on:blur="userValidation('username', 'userInput1', 'Please enter a valid Username')"
+                required
                 >
-                  <b-form-input
-                  id="username"
-                  type="text"
-                  placeholder="Username"
-                  v-on:blur="userValidation('username', 'userInput1', 'Please enter a valid Username')"
-                  required
-                  >
-                  </b-form-input>
-                  <p v-if="validUser" style="color:red;">Please enter valid Username</p>
-                </b-form-group>
-                <b-form-group
-                id="userInput2"
-                label="Password"
-                label-for="password"
+                </b-form-input>
+                <p v-if="validUser" style="color:red;">Please enter valid Username</p>
+              </b-form-group>
+              <b-form-group
+              id="userInput2"
+              label="Password"
+              label-for="password"
+              >
+                <b-form-input
+                id="password"
+                type="password"
+                v-on:blur="passValidation()"
+                required
                 >
-                  <b-form-input
-                  id="password"
-                  type="password"
-                  v-on:blur="passValidation()"
-                  required
-                  >
-                  </b-form-input>
-                  <p v-if="validPass" style="color:red">Please enter a valid Password</p>
-                  <b-button type="submit" variant="primary" style="margin-top: 15px;">Submit</b-button>
-                </b-form-group>
-              </b-form>
-            </b-jumbotron>
-            <p style="text-align: center;">Don't have an Account.<span id="signUp"><router-link to="/signup">Sign Up</router-link></span></p>
-          </b-container>
+                </b-form-input>
+                <p v-if="validPass" style="color:red">Please enter a valid Password</p>
+                <b-button type="submit" variant="primary" style="margin-top: 15px;">Submit</b-button>
+              </b-form-group>
+            </b-form>
+          </b-jumbotron>
+          <p style="text-align: center;">Don't have an Account.<span id="signUp"><router-link to="/signup">Sign Up</router-link></span></p>
         </b-col>
       </b-row>
     </b-container>
+
   </div>
 </template>
 
@@ -97,7 +94,6 @@ export default {
         .then( function (response) {
           console.log(response)
           token = response.data.token;
-          console.log(token);
 
         })
         .catch(err => console.log(err));
@@ -120,6 +116,7 @@ export default {
 
 <style scoped>
 img {
-  width: 70%;
+  width: 300px;
+  margin-bottom: 10px;
 }
 </style>

@@ -67,14 +67,11 @@ export default {
             console.log(this.postImage);
         },
         async onSubmit() {
-            console.log(this.originalContent, this.form.postContent, this.postImage, this.postID);
+            const token = localStorage.getItem("token");
+            let headers = 'Bearer ' + token;
             const updatedContent = this.form.postContent ? this.form.postContent : this.originalContent;
-            console.log(updatedContent);
-            /*const fd = {
-                image: this.postImage,
-                postContent: this.form.postContent,
-                postID: this.postID
-            }*/
+            
+           
             const fd = new FormData();
             fd.append('image', this.postImage);
             fd.append('postContent', updatedContent);
@@ -84,12 +81,14 @@ export default {
             try {
                 await axios.put('http://localhost:3000/posts/editPost', fd, {
                     headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': headers
                     }
                 });
                 this.form.postContent = '';
                 this.postImage = null;
                 this.postID = null;
+                document.getElementById('form').reset();
                 this.$router.push('/posts');
             } catch (err) {
                 console.log(err);
@@ -97,6 +96,7 @@ export default {
             
         },
         cancelEditPost() {
+            this.postImage = null;
             this.$router.push('/posts');
         }
     }
