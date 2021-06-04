@@ -22,7 +22,7 @@
                   </svg>
               </b-navbar-brand>
           </b-col>
-          <b-col v-if="$store.state.userProfilePicture === null" class="profilePic">
+          <b-col v-if="$store.state.userProfilePicture === null || $store.state.userProfilePicture === undefined || $store.state.userProfilePicture === ''" class="profilePic">
             <img class="img-fluid rounded-circle" src="./assets/default-user-image.png" alt="Profile Picture">
           </b-col>
           <b-col v-else class="profilePic">
@@ -32,22 +32,19 @@
         </b-row>
       </b-container>
       
-       <!-- <b-navbar toggleable="lg" type="dark" variant="dark">-->
           <b-row align-h="between">
-            <!--<b-nav-form>
-                <router-link to="/signup"><b-button size="sm" class="my-2 my-sm-0" variant="success">Sign Up</b-button></router-link>
-            </b-nav-form>-->
+           
             <b-col cols="4">
               <b-navbar-nav style="margin-right: 15px;">
-                    <!--<b-nav-item ><router-link to="/"><b-icon-door-open></b-icon-door-open><br/>Login</router-link></b-nav-item>-->
-                  <b-nav-item><router-link to="/posts" class="text-white"><b-icon icon="card-text" style="margin-right: 5px;"></b-icon>Posts</router-link></b-nav-item>
+                    
+                  <b-nav-item v-if="$store.state.online"><router-link to="/posts" class="text-white"><b-icon icon="card-text" style="margin-right: 5px;"></b-icon>Posts</router-link></b-nav-item>
               </b-navbar-nav>
             </b-col>
-            <b-col cols="4" class="d-flex flex-row-reverse">
+            <b-col v-if="$store.state.online" cols="4" class="d-flex flex-row-reverse">
               <b-dropdown id="dropdown-dropright" text="Settings" class="m-2">
-                <b-dropdown-item ><router-link to="/user">User Profile</router-link></b-dropdown-item>
+                <b-dropdown-item><router-link to="/user">User Profile</router-link></b-dropdown-item>
                 <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item  @click="logOut" v-if="$store.state.online"><router-link to="/">Log Out</router-link></b-dropdown-item>
+                <b-dropdown-item  v-if="$store.state.online" @click="logOut"><router-link to="/">Log Out</router-link></b-dropdown-item>
                 <b-dropdown-item v-else><router-link to="/">Log In</router-link></b-dropdown-item>
               </b-dropdown>
             </b-col>

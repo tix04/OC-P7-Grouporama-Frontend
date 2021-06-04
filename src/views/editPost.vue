@@ -12,7 +12,7 @@
                 v-model.trim="form.postContent"
                 >
                 </b-form-textarea>
-                <!--{{this.postContent}}-->
+                
                 <b-form-group
                 id=userInput1
                 label="Upload an image (Optional)"
@@ -43,12 +43,8 @@ export default {
     data() {
         return {
             form: {
-                postContent: ''/*,
-                likes: 0,
-                comments: 0*/
+                postContent: ''
             },
-            //postContent: '',
-            //likes: 0,
             postImage: null,
             postID: null,
             originalContent: ''
@@ -57,27 +53,24 @@ export default {
     created () {
      this.postID = parseInt(this.$route.query.postID);
      this.originalContent = this.$route.query.postContent;
-     console.log(this.postID);
-     console.log(this.originalContent);
-     console.log(this.form.postContent);
+     
     },
     methods: {
         upload(event) {
             this.postImage = event.target.files[0];
-            console.log(this.postImage);
+            
         },
         async onSubmit() {
             const token = localStorage.getItem("token");
             let headers = 'Bearer ' + token;
             const updatedContent = this.form.postContent ? this.form.postContent : this.originalContent;
             
-           
+            
             const fd = new FormData();
             fd.append('image', this.postImage);
             fd.append('postContent', updatedContent);
             fd.append('postID', this.postID);
-            console.log(fd);
-
+            
             try {
                 await axios.put('http://localhost:3000/posts/editPost', fd, {
                     headers: {

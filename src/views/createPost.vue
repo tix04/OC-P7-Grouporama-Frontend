@@ -10,7 +10,6 @@
                 max-rows="10"
                 class="content"
                 v-model.trim="form.postContent"
-                required
                 >
                 </b-form-textarea>
                 <b-form-group
@@ -35,6 +34,9 @@
                 <b-button type="submit" variant="success">Submit Post</b-button>
                 <b-button type="reset" variant="danger" @click="onReset">Cancel</b-button>
             </b-form>
+            <div id="validationError">
+                At least one of the fields is required!!
+            </div>
         </b-container>
         
     </div>
@@ -72,34 +74,43 @@ export default {
         },
         onReset() {
             this.postImage = null;
+            this.invalidFile = false;
+            document.getElementById('validationError').style.display = "none";
+            document.getElementById('form').reset();
             this.$router.push('/posts');
         },
         async onSubmit() {
+            let text = document.getElementById('postContent');
             const token = localStorage.getItem("token");
             let headers = 'Bearer ' + token;
 
-            const fd = new FormData();
-            fd.append('image', this.postImage);
-            fd.append('postContent', this.form.postContent);
-            fd.append('likes', this.form.likes);
-            fd.append('comments', this.form.comments);
-            
-            console.log(fd);
+            if(text.textContent === '' && this.postImage === null) {
+                document.getElementById('validationError').style.display = "block";
+            }else {
+                const fd = new FormData();
+                fd.append('image', this.postImage);
+                fd.append('postContent', this.form.postContent);
+                fd.append('likes', this.form.likes);
+                fd.append('comments', this.form.comments);
+                
 
-            try {
-                await axios.post('http://localhost:3000/posts/newPost', fd, {
-                    headers: {
-                        "Authorization": headers
-                    }
-                });
-                this.form.postContent = '';
-                this.postImage = null;
-                this.invalidFile = false;
+                try {
+                    await axios.post('http://localhost:3000/posts/newPost', fd, {
+                        headers: {
+                            "Authorization": headers
+                        }
+                    });
 
-                document.getElementById('form').reset();
-                this.$router.push('/posts');
-            } catch (err) {
-                console.log(err);
+                    document.getElementById('validationError').style.display = "none";
+                    this.form.postContent = '';
+                    this.postImage = null;
+                    this.invalidFile = false;
+
+                    document.getElementById('form').reset();
+                    this.$router.push('/posts');
+                } catch (err) {
+                    console.log(err);
+                }
             }
             
         }
@@ -120,4 +131,17 @@ export default {
 .content {
     margin: 50px 0;
 }
+
+#validationError {
+    background-color: #ffb6c1;
+    border: 1px solid pink; 
+    border-radius: 5px;
+    padding: 25px;
+    width: 75%;
+    margin: 25px auto;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+}
+
 </style>

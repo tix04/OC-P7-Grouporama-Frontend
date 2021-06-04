@@ -6,6 +6,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    defaultUserImage: require('@/assets/default-user-image.png'),
     userID: 0,
     userName: '',
     userProfilePicture: null,
@@ -29,6 +30,7 @@ export default new Vuex.Store({
       for (var i = 0; i < state.postsData.length; i++) {
         if(state.postsData[i].post_id === postID) {
           state.postsData[i].linked_comments = response.data;
+          console.log(state.postsData[i].linked_comments);
         }
       }
     },

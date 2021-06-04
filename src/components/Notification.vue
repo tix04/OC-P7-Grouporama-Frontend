@@ -33,8 +33,6 @@ export default {
 
         try {
             const token = localStorage.getItem("token");
-            console.log(token);
-
             let headers = 'Bearer ' + token;
 
             let postSummary = await axios.get('http://localhost:3000/posts/postCount', {
@@ -60,7 +58,7 @@ export default {
         try {
             
             const token = localStorage.getItem("token");
-            console.log(token);
+            
 
             let headers = 'Bearer ' + token;
             await axios.put('http://localhost:3000/posts/newPostStatus/', {count: this.totalPosts}, {

@@ -12,14 +12,14 @@
                         ref="profilePicture"
                         placeholder="Select file"
                         accept=".jpeg, .jpg, .png, .gif"
-                        @change="upload"
+                        @change="validateImage"
                         >
                         </b-form-file>
                         
                     </b-input-group>
-                    <span v-if="profilePhoto === null"></span>
-                    <span v-else-if="invalidFile" style="color: #dc3545;">Only Image Files Are Allowed(jpeg, jpg, png, gif)</span>
-                    <span v-else style="color: #28a745;">File is Valid</span>
+                    <span v-if="form.profilePhoto.content === null"></span>
+                    <span v-else-if="form.profilePhoto.type" style="color: #dc3545;">Only Image Files Are Allowed(jpeg, jpg, png, gif)</span>
+                    <span v-else-if="form.profilePhoto.valid" style="color: #28a745;">File is Valid</span>
                 </b-form-group>
                 <b-form-group
                 id="userInput1"
@@ -31,21 +31,16 @@
                         id="fName"
                         type="text"
                         placeholder="For eg. John"
-                        v-model.trim="$v.form.firstName.$model"
-                        :class="{'is-invalid':$v.form.firstName.$error, 'is-valid':!$v.form.firstName.$invalid }"
+                        v-model = form.firstName.content
+                        @input="validateFirstName"
                         required
                         >
                     
                         </b-form-input>
-                        <div class="valid-feedback">Your First Name is valid</div>
-                        <div class="invalid-feedback">
-                            <span v-if="!$v.form.firstName.required">First name is required</span>
-                            <span v-if="!$v.form.firstName.minLength">First name must have at least {{ $v.form.firstName.$params.minLength.min }} letters.</span>
-                            <span v-if="!$v.form.firstName.maxLength">First Name must have at most {{ $v.form.firstName.$params.maxLength.max }} letters.</span>
-                            <span v-if="!$v.form.firstName.nameValidator">First Name can only contain letter characters.</span>
-                        </div>
-
+                        
                     </b-input-group>
+                    <span v-if="form.firstName.valid" style="color: #28a745;">Your First Name is valid</span>
+                    <span v-if="form.firstName.invalid" style="color: #dc3545;">{{form.firstName.message}}</span>
                 </b-form-group>
 
                 <b-form-group
@@ -58,19 +53,16 @@
                         id="lName"
                         type="text"
                         placeholder="For eg. Smith"
-                        v-model.trim="$v.form.lastName.$model"
-                        :class="{'is-invalid':$v.form.lastName.$error, 'is-valid':!$v.form.lastName.$invalid }"
+                        v-model = form.lastName.content
+                        @input="validateLastName"
                         required
                         >
                         </b-form-input>
-                        <div class="valid-feedback">Your Last Name is valid</div>
-                        <div class="invalid-feedback">
-                            <span v-if="!$v.form.lastName.required">Last name is required</span>
-                            <span v-if="!$v.form.lastName.minLength">Last name must have at least {{ $v.form.lastName.$params.minLength.min }} letters.</span>
-                            <span v-if="!$v.form.lastName.maxLength">Last Name must have at most {{ $v.form.lastName.$params.maxLength.max }} letters.</span>
-                        </div>
                         
                     </b-input-group>
+                    <span v-if="form.lastName.valid" style="color: #28a745;">Your Last Name is valid</span>
+                    <span v-if="form.lastName.invalid" style="color: #dc3545;">{{form.lastName.message}}</span>
+
                 </b-form-group>
                 <b-form-group
                 id="userInput4"
@@ -81,18 +73,15 @@
                         <b-form-input
                         id="age"
                         type="number"
-                        v-model.number.lazy="$v.form.age.$model"
-                        :class="{'is-invalid':$v.form.age.$error, 'is-valid':!$v.form.age.$invalid }"
+                        v-model= form.age.value
+                        @change="validateAge"
                         required
                         >
                         </b-form-input>
-                        <div class="valid-feedback">Your age is valid</div>
-                        <div class="invalid-feedback">
-                            <span v-if="!$v.form.age.between">Age must be between {{ $v.form.age.$params.between.min }} and {{$v.form.age.$params.between.max }}</span>
-                            
-                        </div>
-                        
+                         
                     </b-input-group>
+                    <span v-if="form.age.valid" style="color: #28a745;">Your age is valid</span>
+                    <span v-if="form.age.invalid" style="color: #dc3545;">{{form.age.message}}</span>
                 </b-form-group>
                 <b-form-group
                 id="userInput5"
@@ -104,19 +93,16 @@
                         id="email"
                         type="email"
                         placeholder="For eg. xyz@mail.com"
-                        v-model.trim="$v.form.email.$model"
-                        :class="{'is-invalid':$v.form.email.$error, 'is-valid':!$v.form.email.$invalid }"
+                        v-model="form.email.content"
+                        @input="validateEmail"
                         required
                         >
                         </b-form-input>
-                        <div class="valid-feedback">Your email is valid</div>
-                        <div class="invalid-feedback">
-                            <span v-if="!$v.form.email.required">Email is required</span>
-                            <span v-if="!$v.form.email.email">This is not the correct email format</span>
-                            <span v-if="!$v.form.email.isUnique">This email is already used by another user</span>
-                        </div>
                         
                     </b-input-group>
+                    <span v-if="form.email.valid" style="color: #28a745;">Your email is valid</span>
+                    <span v-if="form.email.invalid" style="color: #dc3545;">{{ form.email.message }}</span>
+
                 </b-form-group>
                 <b-form-group
                 id="userInput6"
@@ -128,19 +114,16 @@
                         id="username"
                         type="text"
                         placeholder="Enter your new username"
-                        v-model.trim="$v.form.username.$model"
-                        :class="{'is-invalid':$v.form.username.$error, 'is-valid':!$v.form.username.$invalid }"
+                        v-model="form.username.content"
+                        @input="validateUsername"
                         required
                         >
                         </b-form-input>
-                        <div class="valid-feedback">Your username is valid</div>
-                        <div class="invalid-feedback">
-                            <span v-if="!$v.form.username.required">username is required</span>
-                            <span v-if="!$v.form.username.isUnique">username is already used by another user</span>
-                            <span v-if="!$v.form.username.minLength">username must have at least {{ $v.form.username.$params.minLength.min }} letters.</span>
-                        </div>
-                       
+                        
                     </b-input-group>
+                    <span v-if="form.username.valid" style="color: #28a745;">Your username is valid</span>
+                    <span v-if="form.username.invalid" style="color: #dc3545;">{{form.username.message}}</span>
+
                 </b-form-group>
                 <b-form-group
                 id="userInput7"
@@ -151,8 +134,9 @@
                         <b-form-input
                         id="password"
                         type="password"
-                        v-model.trim="$v.form.password.$model"
-                        :class="{'is-invalid':$v.form.password.$error, 'is-valid':!$v.form.password.$invalid }"
+                        placeholder="Password"
+                        v-model="form.password.content"
+                        @input="validatePassword"
                         required
                         >
                         </b-form-input>
@@ -160,13 +144,10 @@
                             <b-button @click="togglePassword()" variant="light" size="sm"><b-icon id="toggle" :icon="this.icon1" font-scale="1"></b-icon></b-button>
                         </b-input-group-prepend>
                         
-                        <div class="valid-feedback">Your password is valid</div>
-                        <div class="invalid-feedback">
-                            <span v-if="!$v.form.password.required">Password is required</span>
-                            <span v-if="!$v.form.password.minLength">Password must have at least {{ $v.form.password.$params.minLength.min }} letters.</span>
-                        </div>
-                        
                     </b-input-group>
+                    <span v-if="form.password.valid" style="color: #28a745;">Your password is valid</span>
+                    <span v-if="form.password.invalid" style="color: #dc3545;">{{form.password.message}}</span>
+
                 </b-form-group>
                 <b-form-group
                 id="userInput8"
@@ -177,24 +158,28 @@
                         <b-form-input
                         id="pwdCheck"
                         type="password"
-                        v-model.trim="$v.form.passwordCheck.$model"
-                        :class="{'is-invalid':$v.form.passwordCheck.$error, 'is-valid': (form.password != '') ? !$v.form.passwordCheck.$invalid : '' }"
+                        placeholder="Confirm Password"
+                        v-model="form.pwdCheck.content"
+                        @input="validatePwdCheck"
                         required
                         >
                         </b-form-input>
                         <b-input-group-prepend is-text>
                             <b-button @click="togglePwdCheck()" variant="light" size="sm"><b-icon id="toggle" :icon="this.icon2" font-scale="1"></b-icon></b-button>
                         </b-input-group-prepend>
-                        <div class="valid-feedback">Your password is identical</div>
-                        <div class="invalid-feedback">
-                            <span v-if="!$v.form.passwordCheck.sameAsPassword">Password must be identical</span>
-                        </div>
-                        
+
                     </b-input-group>
+                    <span v-if="form.pwdCheck.valid" style="color: #28a745;">Your password is valid</span>
+                    <span v-if="form.pwdCheck.invalid" style="color: #dc3545;">{{form.pwdCheck.message}}</span>
+
                 </b-form-group>
                 <b-button type="submit" variant="success">Submit</b-button>
                 <b-button type="reset" variant="danger" @click="onReset()">Reset</b-button>
+                <router-link to="/"><b-button variant="light"><b-icon icon="house-door-fill" variant="dark" font-scale="2.5"></b-icon></b-button></router-link>
             </b-form>
+            <div id="validationError">
+                Errors have been detected. Please Verify the information you have entered!!
+            </div>
         </b-container>
         
     </div>
@@ -202,85 +187,64 @@
 
 <script>
 import axios from 'axios'
-import { required, helpers,minLength, maxLength, between, sameAs } from 'vuelidate/lib/validators';
-const nameValidator = helpers.regex('onlyText', /^[a-z]*$/i);
-const email = helpers.regex('emailFormat', /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i);
 export default {
     data() {
         return {
             icon1: 'eye',
             icon2: 'eye',
             form: {
-                firstName: '',
-                lastName: '',
-                age: 0,
-                email: '',
-                username: '',
-                password: '',
-                passwordCheck: '',
+                profilePhoto: {
+                    content: '',
+                    type: false,
+                    valid: false
+                },
+                firstName: {
+                    content: '',
+                    message: '',
+                    invalid: false,
+                    valid: false
+                },
+                lastName: {
+                    content: '',
+                    message: '',
+                    invalid: false,
+                    valid: false 
+                },
+                age: {
+                    value: 0,
+                    message: '',
+                    invalid: false,
+                    valid: false
+                },
+                email: {
+                    content: '',
+                    message: '',
+                   invalid: false,
+                    valid: false 
+                },
+                username: {
+                    content: '',
+                    message: '',
+                   invalid: false,
+                    valid: false 
+                },
+                password: {
+                    content: '',
+                    message: '',
+                    invalid: false,
+                    valid: false 
+                },
+                pwdCheck: {
+                    content: '',
+                    message: '',
+                    invalid: false,
+                    valid: false 
+                }
                 
             },
-           profilePhoto: null,
-           invalidFile: false
+           defaultProfilePhoto: require('@/assets/default-user-image.png')
+           
         }
-    },
-    validations: {
-        form:{
-            firstName: {
-            required,
-            nameValidator,
-            minLength: minLength(3),
-            maxLength: maxLength(20)
-            },
-            lastName: {
-                required,
-                nameValidator,
-                minLength: minLength(3),
-                maxLength: maxLength(20)
-            },
-            email: {
-                required,
-                email,
-                async isUnique() {
-                    const validator = await axios.get('http://localhost:3000/auth/verifyEmail');
-                    let emailList = validator.data;
-
-                    if(emailList.includes(this.form.email)) {
-                        return false;
-                    }else {
-                        return true;
-                    }
-
-                }
-                   
-            },
-            age: {
-                between: between(18, 60)
-            },
-            username: {
-                required,
-                async isUnique() {
-                    const validator = await axios.get('http://localhost:3000/auth/verifyUsername');
-                    let usernameList = validator.data;
-
-                    if(usernameList.includes(this.form.username)) {
-                        return false;
-                    }else {
-                        return true;
-                    }
-
-                },
-                minLength: minLength(5)
-            },
-            password: {
-                required,
-                minLength: minLength(6)
-            },
-            passwordCheck: {
-                sameAsPassword: sameAs('password')
-            }
-        }
-        
     },
     methods:{
         togglePassword() {
@@ -307,53 +271,263 @@ export default {
                 this.icon2 = 'eye';
             }
         },
-        upload(event) {
+        validateImage(event) {
             
-            this.profilePhoto = event.target.files[0];
+            this.form.profilePhoto.content = event.target.files[0];
            
             let regex = /image\/jpeg|image\/jpg|image\/png|image\/gif/;
 
-            if (!regex.test(this.profilePhoto.type)) {
-                this.invalidFile = true;
+            if (!regex.test(this.form.profilePhoto.content.type)) {
+                this.form.profilePhoto.type = true;
                 document.getElementById('profilePhoto').value = null;
                 document.getElementById('profilePhoto').style.borderColor = "#dc3545";
             }else {
-                this.invalidFile = false;
+                this.form.profilePhoto.type = false;
+                this.form.profilePhoto.valid = true;
                 document.getElementById('profilePhoto').style.border = "2px solid green";
             }
 
-        },            
-        async onSubmit() {
-            const fd = new FormData();
-            fd.append('image', this.profilePhoto);
-            fd.append('first_name', this.form.firstName);
-            fd.append('last_name', this.form.lastName);
-            fd.append('age', this.form.age);
-            fd.append('email', this.form.email);
-            fd.append('username', this.form.username);
-            fd.append('password', this.form.password);
-            console.log(fd);
-            try {
-                const newUser = await axios.post('http://localhost:3000/user/newUser', fd);
-                this.form.firstName = '';
-                this.form.lastName = '';
-                this.form.age = 0;
-                this.form.email = '';
-                this.form.username = '';
-                this.form.password = '';
-                this.form.passwordCheck = '';
-                this.profilePhoto = null;
-                this.invalidFile = false;
-                document.getElementById('profilePhoto').value = null;
-                document.getElementById('form').reset();
-                
-                
-                localStorage.setItem("token", newUser.data.token);
-                window.location.href = '#/posts';
+        },
+        validateFirstName() {
+            let regex = /^[a-zA-Z]+$/i;
+            let firstName = this.form.firstName.content;
+            
+            if(firstName === '' || firstName === null) {
 
-            } catch (err) {
-                console.log(err);
+                this.form.firstName.invalid = true;
+                this.form.firstName.message = 'Your first name is Required!!'
+                this.form.firstName.valid = false;
+
+            }else if(firstName.length < 2) {
+
+                this.form.firstName.invalid = true;
+                this.form.firstName.message = 'Your first name must have at least 2 characters';
+                this.form.firstName.valid = false;
+
+            }else if(!regex.test(firstName)) {
+
+                this.form.firstName.invalid = true;
+                this.form.firstName.message = 'Your first name can only contain letter characters';
+                this.form.firstName.valid = false;
+
+            }else {
+
+                this.form.firstName.valid = true;
+                this.form.firstName.invalid = false;
+                this.form.firstName.message = '';
+
             }
+        },
+        validateLastName() {
+            let regex = /^[a-zA-Z]+$/i;
+            let lastName = this.form.lastName.content;
+            
+            if(lastName === '' || lastName === null) {
+
+                this.form.lastName.invalid = true;
+                this.form.lastName.message = 'Your last name is Required!!'
+                this.form.lastName.valid = false;
+
+            }else if(lastName.length < 2) {
+
+                this.form.lastName.invalid = true;
+                this.form.lastName.message = 'Your last name must have at least 2 characters';
+                this.form.lastName.valid = false;
+
+            }else if(!regex.test(lastName)) {
+
+                this.form.lastName.invalid = true;
+                this.form.lastName.message = 'Your last name can only contain letter characters';
+                this.form.lastName.valid = false;
+
+            }else {
+
+                this.form.lastName.valid = true;
+                this.form.lastName.invalid = false;
+                this.form.lastName.message = '';
+
+            }
+        },
+        validateAge() {
+            let age = this.form.age.value;
+            
+            if(age < 18) {
+
+                this.form.age.invalid = true;
+                this.form.age.message = 'You must be 18 or older!!'
+                this.form.age.valid = false;
+
+            }else {
+
+                this.form.age.valid = true;
+                this.form.age.invalid = false;
+                this.form.lastName.message = '';
+
+            }
+        },
+        async validateEmail() {
+            let regex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i;
+            let email = this.form.email.content;
+            
+            const emailValidator = await axios.get('http://localhost:3000/auth/verifyEmail');
+            let emailList = emailValidator.data;
+
+            if(email === '' || email === null) {
+
+                this.form.email.invalid = true;
+                this.form.email.message = 'Your email is Required!!'
+                this.form.email.valid = false;
+
+            }else if(!regex.test(email)) {
+
+                this.form.email.invalid = true;
+                this.form.email.message = 'This is not a correct email format';
+                this.form.email.valid = false;
+
+            }else if (emailList.includes(email)) {
+
+                this.form.email.invalid = true;
+                this.form.email.message = 'This email is already used another User!!';
+                this.form.email.valid = false;
+
+            }else {
+                
+                this.form.email.valid = true;
+                this.form.email.invalid = false;
+                this.form.email.message = '';
+            }
+
+        },
+        async validateUsername() {
+            let regex = /^\S*$/;
+            let username = this.form.username.content;
+            
+            const usernameValidator = await axios.get('http://localhost:3000/auth/verifyUsername');
+            let usernameList = usernameValidator.data;
+
+            if(username === '' || username === null) {
+
+                this.form.username.invalid = true;
+                this.form.username.message = 'Your username is Required!!'
+                this.form.username.valid = false;
+
+            }else if(username.length < 6) {
+
+                this.form.username.invalid = true;
+                this.form.username.message = 'Your username must be at least 6 characters';
+                this.form.username.valid = false;
+
+            }else if(!regex.test(username)) {
+
+                this.form.username.invalid = true;
+                this.form.username.message = 'Your username should not contain any spaces';
+                this.form.username.valid = false;
+
+            }else if (usernameList.includes(username)) {
+
+                this.form.username.invalid = true;
+                this.form.username.message = 'This username is already used another User!!';
+                this.form.username.valid = false;
+
+            }else {
+                
+                this.form.username.valid = true;
+                this.form.username.invalid = false;
+                this.form.username.message = '';
+            }
+
+        },
+        validatePassword() {
+            
+            let password = this.form.password.content;
+            
+            if(password === '' || password === null) {
+
+                this.form.password.invalid = true;
+                this.form.password.message = 'Your new Password is Required!!'
+                this.form.password.valid = false;
+
+            }else if(password.length < 6) {
+
+                this.form.password.invalid = true;
+                this.form.password.message = 'Your password must be at least 6 characters';
+                this.form.password.valid = false;
+
+            }else {
+                
+                this.form.password.valid = true;
+                this.form.password.invalid = false;
+                this.form.password.message = '';
+            }
+
+        },
+        validatePwdCheck() {
+            
+            let pwdCheck = this.form.pwdCheck.content;
+            
+            if(pwdCheck === '' || pwdCheck === null) {
+
+                this.form.pwdCheck.invalid = true;
+                this.form.pwdCheck.message = 'Please Confirm your Password!!'
+                this.form.pwdCheck.valid = false;
+
+            }else if(pwdCheck !== this.form.password.content) {
+
+                this.form.pwdCheck.invalid = true;
+                this.form.pwdCheck.message = 'The passwords do not Match!!';
+                this.form.pwdCheck.valid = false;
+
+            }else {
+                
+                this.form.pwdCheck.valid = true;
+                this.form.pwdCheck.invalid = false;
+                this.form.pwdCheck.message = '';
+            }
+
+        },        
+        async onSubmit() {
+
+
+            if(
+                this.form.firstName.valid && this.form.lastName.valid && this.form.age.valid
+                && this.form.email.valid && this.form.username.valid && this.form.password.valid
+                && this.form.pwdCheck.valid
+            ) {
+
+                document.getElementById('validationError').style.display = 'none';
+                const fd = new FormData();
+                fd.append('image', this.form.profilePhoto.content);
+                fd.append('first_name', this.form.firstName.content);
+                fd.append('last_name', this.form.lastName.content);
+                fd.append('age', this.form.age.value);
+                fd.append('email', this.form.email.content);
+                fd.append('username', this.form.username.content);
+                fd.append('password', this.form.password.content);
+           
+                try {
+                    const newUser = await axios.post('http://localhost:3000/user/newUser', fd);
+                    this.form.firstName.content = '';
+                    this.form.lastName.content = '';
+                    this.form.age.value = 0;
+                    this.form.email.content = '';
+                    this.form.username.content = '';
+                    this.form.password.content = '';
+                    this.form.pwdCheck.content = '';
+                    document.getElementById('profilePhoto').value = null;
+                    document.getElementById('form').reset();
+                    
+                    
+                    localStorage.setItem("token", newUser.data.token);
+                    window.location.href = '#/posts';
+
+                } catch (err) {
+                    console.log(err);
+                }
+            }else {
+                document.getElementById('validationError').style.display = 'block';
+
+            }
+            
         },
         onReset() {
             this.$router.go();
@@ -397,4 +571,17 @@ input {
     background-color: transparent;
     border: none;
 }
+
+#validationError {
+    background-color: #ffb6c1;
+    border: 1px solid pink; 
+    border-radius: 5px;
+    padding: 25px;
+    width: 75%;
+    margin: 25px auto;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+}
+
 </style>

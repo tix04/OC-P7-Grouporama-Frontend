@@ -4,7 +4,16 @@
 
             <div class="profilePicture">
                     <div class="image">
-                        <b-img class="image__img" thumbnail rounded :src="$store.state.userDetail.profile_image" alt="User Profile Picture"></b-img>
+                        <b-img 
+                        v-if="$store.state.userProfilePicture === null || $store.state.userProfilePicture === undefined || $store.state.userProfilePicture === ''" 
+                        :src="$store.state.defaultUserImage"
+                        class="image__img"
+                        thumbnail
+                        rounded
+                        alt="User Profile Picture"
+                        >
+                        </b-img>
+                        <b-img v-else class="image__img" thumbnail rounded :src="$store.state.userDetail.profile_image" alt="User Profile Picture"></b-img>
                         <div class="image__overlay">
                             <div class="edit__container">
                                 <b-button @click="changeProfilePicture" class="edit__button"><b-icon icon="camera"></b-icon></b-button>
@@ -33,6 +42,7 @@
                         <b-button variant="danger" @click="hideProfilePicture">Cancel</b-button>
                     </div>
                 </b-form>
+                <span class="invalid" id="invalidImage" style="display: none;"></span>
             </div>
 
             <b-container>
@@ -153,7 +163,7 @@
                     <div v-show="this.editPassword" class="modificationForm">
                         <h5>Please Enter your new Password:</h5><br/>
                         <span class="invalid" id="invalidPassword" style="display: none;"></span>
-                        <b-form @submit.prevent="updateUsername" id="form6">
+                        <b-form @submit.prevent="updatePassword" id="form6">
                             
                             <label class="sr-only" for="newPassword">Password:</label>
                             <b-form-input
@@ -193,7 +203,7 @@
                     <b-row class="userInfo">
                         <b-col sm class="label">Delete your account</b-col>
                         <b-col sm class="edit">
-                            <b-button variant="danger">
+                            <b-button variant="danger" @click="deleteUser">
                                 Delete<b-icon icon="pencil"></b-icon>
                             </b-button>
                         </b-col>
@@ -209,6 +219,7 @@ import store from '../store/index';
 export default {
     data () {
         return {
+            imageUrl: "../assets/default-user-image.png",
             icon1: 'eye',
             icon2: 'eye',
             userDetails: [],
@@ -220,8 +231,14 @@ export default {
             editAge: false,
             editEmail: false,
             editPassword: false,
-            userID: '',
-            password: ''
+            validProfilePhoto: false,
+            validFirstName: false,
+            validLastName: false,
+            validAge: false,
+            validEmail: false,
+            validUsername: false,
+            validPassword: false,
+            validPwdCheck: false
         }
     },
     async created() {
@@ -237,7 +254,7 @@ export default {
                 
                 let data = response.data[0];
                 store.commit('updateUser', data);
-                console.log(data);
+                
             } catch(err) {
                 console.error(err);
             }
@@ -265,41 +282,51 @@ export default {
                 this.editPassword = true;
             },
             hideProfilePicture() {
+                this.validProfilePhoto = false;
                 this.editProfilePicture = false;
                 this.newProfilePhoto = null;
+                document.getElementById('invalidImage').style.display = 'none';
+                document.getElementById('invalidImage').textContent = '';
                 document.getElementById('form').reset();
             },
             hideFirstName() {
+                this.validFirstName = false;
                 this.editFirstName = false;
                 document.getElementById('invalidFirstName').style.display = "none";
                 document.getElementById('newFirstName').style.border = "1px solid #ced4da";
                 document.getElementById('form1').reset();
             },
              hideLastName() {
+                 this.validLastName = false;
                 this.editLastName = false;
                 document.getElementById('invalidLastName').style.display = "none";
                 document.getElementById('newLastName').style.border = "1px solid #ced4da";
                 document.getElementById('form2').reset();
             },
              hideAge() {
+                 this.validAge = false;
                 this.editAge = false;
                 document.getElementById('invalidAge').style.display = "none";
                 document.getElementById('newAge').style.border = "1px solid #ced4da";
                 document.getElementById('form3').reset();
             },
              hideEmail() {
+                 this.validEmail = false;
                 this.editEmail = false;
                 document.getElementById('invalidEmail').style.display = "none";
                 document.getElementById('newEmail').style.border = "1px solid #ced4da";
                 document.getElementById('form4').reset();
             },
             hideUsername() {
+                this.validUsername = false;
                 this.editUsername = false;
                 document.getElementById('invalidUsername').style.display = "none";
                 document.getElementById('newUsername').style.border = "1px solid #ced4da";
                 document.getElementById('form5').reset();
             },
              hidePassword() {
+                 this.validPassword = false;
+                 this.validPwdCheck = false;
                 this.editPassword = false;
                 document.getElementById('invalidPassword').style.display = "none";
                 document.getElementById('newPassword').style.border = "1px solid #ced4da";
@@ -310,20 +337,33 @@ export default {
                 let input = document.getElementById('newFirstName').value;
 
 
-                let regex = /^[a-z]*$/i;
+                let regex = /^[a-zA-Z]+$/i;
                 if(input === '' || input === null) {
+
+                    this.validFirstName = false;
                     document.getElementById('invalidFirstName').style.display = "inline";
                     document.getElementById('invalidFirstName').textContent = "Your first name is required";
                     document.getElementById('newFirstName').style.border = "2px solid red";
 
-                }else if(!regex.test(input)) {
+                }else if(input.length < 2) {
+
+                    this.validFirstName = false;
                     document.getElementById('invalidFirstName').style.display = "inline";
-                    document.getElementById('invalidFirstName').textContent = "Only Alphabetic Characters are allowed";
+                    document.getElementById('invalidFirstName').textContent = "Your first name must have at least 2 characters";
+                    document.getElementById('newFirstName').style.border = "2px solid red";
+
+                }else if(!regex.test(input)) {
+
+                    this.validFirstName = false;
+                    document.getElementById('invalidFirstName').style.display = "inline";
+                    document.getElementById('invalidFirstName').textContent = "Your first name can only contain letter characters";
                     document.getElementById('newFirstName').style.border = "2px solid red";
 
                 }else {
+
                     document.getElementById('invalidFirstName').style.display = "none";
                     document.getElementById('newFirstName').style.border = "2px solid green";
+                    this.validFirstName = true;
                 }
             },
             lastNameValidator() {
@@ -332,18 +372,31 @@ export default {
 
                 let regex = /^[a-z]*$/i;
                 if(input === '' || input === null) {
+
+                    this.validLastName = false;
                     document.getElementById('invalidLastName').style.display = "inline";
                     document.getElementById('invalidLastName').textContent = "Your last name is required";
                     document.getElementById('newLastName').style.border = "2px solid red";
 
-                }else if(!regex.test(input)) {
+                }else if(input.length < 2) {
+
+                    this.validLastName = false;
                     document.getElementById('invalidLastName').style.display = "inline";
-                    document.getElementById('invalidLastName').textContent = "Only Alphabetic Characters are allowed";
+                    document.getElementById('invalidLastName').textContent = "Your last name must have at least 2 characters";
+                    document.getElementById('newLastName').style.border = "2px solid red";
+
+                }else if(!regex.test(input)) {
+
+                    this.validLastName = false;
+                    document.getElementById('invalidLastName').style.display = "inline";
+                    document.getElementById('invalidLastName').textContent = "Your last name can only contain letter characters";
                     document.getElementById('newLastName').style.border = "2px solid red";
 
                 }else {
+
                     document.getElementById('invalidLastName').style.display = "none";
                     document.getElementById('newLastName').style.border = "2px solid green";
+                    this.validLastName = true;
                 }
             },
             ageValidator() {
@@ -351,13 +404,18 @@ export default {
                 
 
                 if(age < 18) {
+
+                    this.validAge = false;
                     document.getElementById('invalidAge').style.display = "inline";
                     document.getElementById('invalidAge').textContent = "User must be at least 18 Years Old";
                     document.getElementById('newAge').style.border = "2px solid red";
 
                 }else {
+
                     document.getElementById('invalidAge').style.display = 'none';
                     document.getElementById('newAge').style.border = "2px solid green";
+                    this.validAge = true;
+
                 }
             },
             async emailValidator() {
@@ -370,21 +428,31 @@ export default {
                 
 
                 if(input === '' || input === null) {
+
+                    this.validEmail = false;
                     document.getElementById('invalidEmail').style.display = 'inline';
                     document.getElementById('invalidEmail').textContent = "Your email is required";
                     document.getElementById('newEmail').style.border = "2px solid red";
+
                 }else if(!regex.test(input)) {
+
+                    this.validEmail = false;
                     document.getElementById('invalidEmail').style.display = 'inline';
                     document.getElementById('invalidEmail').textContent = "This is not a valid email";
                     document.getElementById('newEmail').style.border = "2px solid red";
+
                 }else if(emailList.includes(input)) {
+
+                    this.validEmail = false;
                     document.getElementById('invalidEmail').style.display = 'inline';
                     document.getElementById('invalidEmail').textContent = "This email is already used by another user";
                     document.getElementById('newEmail').style.border = "2px solid red";
 
                 }else {
+
                     document.getElementById('invalidEmail').style.display = "none";
                     document.getElementById('newEmail').style.border = "2px solid green";
+                    this.validEmail = true;
                 }
             },
             async usernameValidator() {
@@ -396,17 +464,32 @@ export default {
                 
 
                 if(input === '' || input === null) {
+
+                    this.validUsername = false;
                     document.getElementById('invalidUsername').style.display = 'inline';
                     document.getElementById('invalidUsername').textContent = "Your Username is required";
                     document.getElementById('newUsername').style.border = "2px solid red";
+
+                }else if(input.length < 6) {
+
+                    this.validUsername = false;
+                    document.getElementById('invalidUsername').style.display = 'inline';
+                    document.getElementById('invalidUsername').textContent = "Your username must be at least 6 characters";
+                    document.getElementById('newUsername').style.border = "2px solid red";
+
                 }else if(usernameList.includes(input)) {
+
+                    this.validUsername = false;
                     document.getElementById('invalidUsername').style.display = 'inline';
                     document.getElementById('invalidUsername').textContent = "This username is already used by another user";
                     document.getElementById('newUsername').style.border = "2px solid red";
 
                 }else {
+
                     document.getElementById('invalidUsername').style.display = "none";
                     document.getElementById('newUsername').style.border = "2px solid green";
+                    this.validUsername = true;
+
                 }
             },
             togglePassword() {
@@ -436,14 +519,25 @@ export default {
             passwordValidator() {
                 let input = document.getElementById('newPassword').value;
                 
+                if (input === '' || input === null) {
 
-                if(input.length < 6) {
+                    this.validPassword = false;
                     document.getElementById('invalidPassword').style.display = "inline";
-                    document.getElementById('invalidPassword').textContent = "Your Password must have at least 8 characters";
+                    document.getElementById('invalidPassword').textContent = "Your Password is Required!!";
                     document.getElementById('newPassword').style.border = "2px solid red";
+
+                }else if(input.length < 6) {
+
+                    this.validPassword = false;
+                    document.getElementById('invalidPassword').style.display = "inline";
+                    document.getElementById('invalidPassword').textContent = "Your Password must have at least 6 characters";
+                    document.getElementById('newPassword').style.border = "2px solid red";
+
                 }else {
+
                     document.getElementById('invalidPassword').style.display = "none";
                     document.getElementById('newPassword').style.border = "2px solid green";
+                    this.validPassword = true;
                     
                 }
                 
@@ -451,20 +545,52 @@ export default {
             pwdCheckValidator() {
                 let input = document.getElementById('confirmPassword').value;
                 
+                if(input === '' || input === null) {
 
-                if(input !== document.getElementById('newPassword').value) {
+                    this.validPwdCheck = false;
                     document.getElementById('invalidPassword').style.display = "inline";
-                    document.getElementById('invalidPassword').textContent = "Your password must match";
+                    document.getElementById('invalidPassword').textContent = "Please Confirm your Password!!";
                     document.getElementById('confirmPassword').style.border = "2px solid red";
+
+                }
+                else if(input !== document.getElementById('newPassword').value) {
+
+                    this.validPwdCheck = false;
+                    document.getElementById('invalidPassword').style.display = "inline";
+                    document.getElementById('invalidPassword').textContent = "Your password must be identical";
+                    document.getElementById('confirmPassword').style.border = "2px solid red";
+
                 }else {
+
                     document.getElementById('invalidPassword').style.display = "none";
                     document.getElementById('confirmPassword').style.border = "2px solid green";
+                    this.validPwdCheck = true;
+
                 }
 
 
             },
             saveImage(event) {
                 this.newProfilePhoto = event.target.files[0];
+
+                let regex = /image\/jpeg|image\/jpg|image\/png|image\/gif/;
+
+                if (!regex.test(this.newProfilePhoto.type)) {
+                    
+                    this.validProfilePhoto = false;
+                    document.getElementById('newProfilePicture').value = null;
+                    document.getElementById('invalidImage').style.display = 'inline';
+                    document.getElementById('invalidImage').textContent = 'Only Image Files are allowed. jpeg, jpg, png, gif!!';
+                    document.getElementById('newProfilePicture').style.border = '2px solid red';
+
+                }else {
+
+                    this.validProfilePhoto = true;
+                    document.getElementById('invalidImage').style.display = 'none';
+                    document.getElementById('newProfilePicture').style.border = '2px solid green'
+
+                    
+                }
                 
             },
             async updateProfilePhoto() {
@@ -475,25 +601,33 @@ export default {
                 const fd = new FormData();
                 fd.append('userId', store.state.userID);
                 fd.append('image', this.newProfilePhoto);
-                
-                
 
-                await axios.put('http://localhost:3000/user/profilePhoto', fd, {
-                    headers: {
-                        "Authorization": headers
-                    }
-                })
-                .then(function(response) {
-                    console.log(response);
-                    store.dispatch('updateUser');
+                if(this.newProfilePhoto === null) {
+                    
+                    document.getElementById('invalidImage').style.display = 'inline';
+                    document.getElementById('invalidImage').textContent = 'Please Select a Profile Picture';
+                    document.getElementById('newProfilePicture').style.border = '2px solid red';
 
-                }).catch(function(err) {
-                    console.log(err);
-                });
+                }else if(this.validProfilePhoto) {
 
-                this.editProfilePicture = false;
-                this.newProfilePhoto = null;
-                document.getElementById('form').reset();
+                    await axios.put('http://localhost:3000/user/profilePhoto', fd, {
+                        headers: {
+                            "Authorization": headers
+                        }
+                    })
+                    .then(function() {
+                        
+                        store.dispatch('updateUser');
+
+                    }).catch(function(err) {
+                        console.log(err);
+                    });
+
+                    this.validProfilePhoto = false;
+                    this.editProfilePicture = false;
+                    this.newProfilePhoto = null;
+                    document.getElementById('form').reset();
+                }
             },
             async updateFirstName() {
                 let newData = document.getElementById('newFirstName').value;
@@ -502,21 +636,26 @@ export default {
                 const token = localStorage.getItem("token");
                 let headers = 'Bearer ' + token;
 
-                await axios.put('http://localhost:3000/user/firstName', {firstName: newData} , {
-                     headers: {
-                        "Authorization": headers
-                    }
-                }).then(function () {
+                if(this.validFirstName) {
+                    await axios.put('http://localhost:3000/user/firstName', {firstName: newData} , {
+                        headers: {
+                            "Authorization": headers
+                        }
+                    }).then(function () {
 
-                    store.dispatch('updateUser');
+                        store.dispatch('updateUser');
 
-                }).catch (function (err) {
-                    console.log(err);
-                })
+                    }).catch (function (err) {
+                        console.log(err);
+                    })
 
-                document.getElementById('form1').reset();
-                document.getElementById('newFirstName').style.border = "1px solid #ced4da"
-                this.editFirstName = false;
+                    this.validFirstName = false;
+                    document.getElementById('form1').reset();
+                    document.getElementById('invalidFirstName').style.display = "none";
+                    document.getElementById('newFirstName').style.border = "1px solid #ced4da";
+                    this.editFirstName = false;
+
+                }
             },
             async updateLastName() {
                 
@@ -525,43 +664,53 @@ export default {
                 const token = localStorage.getItem("token");
                 let headers = 'Bearer ' + token;
 
-                await axios.put('http://localhost:3000/user/lastName', {lastName: newData} , {
-                     headers: {
-                        "Authorization": headers
-                    }
-                }).then(function () {
+                if(this.validLastName) {
+                    await axios.put('http://localhost:3000/user/lastName', {lastName: newData} , {
+                        headers: {
+                            "Authorization": headers
+                        }
+                    }).then(function () {
 
-                    store.dispatch('updateUser');
+                        store.dispatch('updateUser');
 
-                }).catch (function (err) {
-                    console.log(err);
-                })
+                    }).catch (function (err) {
+                        console.log(err);
+                    })
 
-                document.getElementById('form2').reset();
-                document.getElementById('newLastName').style.border = "1px solid #ced4da";
-                this.editLastName = false;
+                    this.validLastName = false;
+                    document.getElementById('form2').reset();
+                    document.getElementById('invalidLastName').style.display = "none";
+                    document.getElementById('newLastName').style.border = "1px solid #ced4da";
+                    this.editLastName = false;
+
+                }
             },
             async updateAge() {
                 let newData = document.getElementById('newAge').value;
                 
                 const token = localStorage.getItem("token");
                 let headers = 'Bearer ' + token;
+                
+                if(this.validAge) {
+                    await axios.put('http://localhost:3000/user/age', {age: newData} , {
+                        headers: {
+                            "Authorization": headers
+                        }
+                    }).then(function () {
 
-                await axios.put('http://localhost:3000/user/age', {age: newData} , {
-                     headers: {
-                        "Authorization": headers
-                    }
-                }).then(function () {
+                        store.dispatch('updateUser');
 
-                    store.dispatch('updateUser');
+                    }).catch (function (err) {
+                        console.log(err);
+                    });
 
-                }).catch (function (err) {
-                    console.log(err);
-                });
+                    this.validAge = false;
+                    document.getElementById('form3').reset();
+                    document.getElementById('invalidAge').style.display = "none";
+                    document.getElementById('newAge').style.border = "1px solid #ced4da";
+                    this.editAge = false;
 
-                document.getElementById('form3').reset();
-                document.getElementById('newAge').style.border = "1px solid #ced4da";
-                this.editAge = false;
+                }
             },
             async updateEmail() {
                 let newData = document.getElementById('newEmail').value;
@@ -569,21 +718,27 @@ export default {
                 const token = localStorage.getItem("token");
                 let headers = 'Bearer ' + token;
 
-                await axios.put('http://localhost:3000/user/email', {email: newData} , {
-                     headers: {
-                        "Authorization": headers
-                    }
-                }).then(function () {
+                if(this.validEmail) {
 
-                    store.dispatch('updateUser');
+                    await axios.put('http://localhost:3000/user/email', {email: newData} , {
+                        headers: {
+                            "Authorization": headers
+                        }
+                    }).then(function () {
 
-                }).catch (function (err) {
-                    console.log(err);
-                });
+                        store.dispatch('updateUser');
 
-                document.getElementById('newEmail').style.border = "1px solid #ced4da";
-                document.getElementById('form4').reset();
-                this.editEmail = false;
+                    }).catch (function (err) {
+                        console.log(err);
+                    });
+
+                    this.validEmail = false;
+                    document.getElementById('invalidEmail').style.display = "none";
+                    document.getElementById('newEmail').style.border = "1px solid #ced4da";
+                    document.getElementById('form4').reset();
+                    this.editEmail = false;
+
+                }
             },
             async updateUsername() {
                 let newData = document.getElementById('newUsername').value;
@@ -591,21 +746,27 @@ export default {
                 const token = localStorage.getItem("token");
                 let headers = 'Bearer ' + token;
 
-                await axios.put('http://localhost:3000/user/username', {username: newData} , {
-                     headers: {
-                        "Authorization": headers
-                    }
-                }).then(function () {
+                if(this.validUsername) {
 
-                    store.dispatch('updateUser');
+                    await axios.put('http://localhost:3000/user/username', {username: newData} , {
+                        headers: {
+                            "Authorization": headers
+                        }
+                    }).then(function () {
 
-                }).catch (function (err) {
-                    console.log(err);
-                });
+                        store.dispatch('updateUser');
 
-                document.getElementById('newUsername').style.border = "1px solid #ced4da";
-                document.getElementById('form5').reset();
-                this.editAge = false;
+                    }).catch (function (err) {
+                        console.log(err);
+                    });
+
+                    this.validUsername = false;
+                    document.getElementById('invalidUsername').style.display = "none";
+                    document.getElementById('newUsername').style.border = "1px solid #ced4da";
+                    document.getElementById('form5').reset();
+                    this.editUsername = false;
+
+                }
             },
             async updatePassword () {
 
@@ -616,47 +777,81 @@ export default {
                 let confirmPassword = document.getElementById('confirmPassword').value;
                 let newData;
 
-                console.log(password, confirmPassword);
+                
+                if(password !== confirmPassword) {
 
-                if(password === confirmPassword) {
+                    this.validPwdCheck = false;
+                    document.getElementById('invalidPassword').style.display = "inline";
+                    document.getElementById('invalidPassword').textContent = "Your password must be identical";
+                    document.getElementById('confirmPassword').style.border = "2px solid red";
+
+                }else if(password === confirmPassword && this.validPassword === true && this.validPwdCheck === true) {
+
                     newData = password;
 
                     await axios.put('http://localhost:3000/user/password', {newPassword: newData}, {
                     headers: {
                         "Authorization": headers
                     }
-                    }).then(function (response) {
-                        console.log(response);
+                    }).then(function () {
+                        
                         store.dispatch('updateUser');
 
                     }).catch (function (err) {
                         console.log(err);
                     });
 
+                    this.validPassword = false;
+                    this.validPwdCheck = false;
                     document.getElementById('form6').reset();
+                    document.getElementById('invalidPassword').style.display = "none";
                     document.getElementById('newPassword').style.border = "1px solid #ced4da";
                     document.getElementById('confirmPassword').style.border = "1px solid #ced4da";
                     this.editPassword = false;
-                }else {
-                    window.alert("Something went wrong, please try again");
                 }
 
+            },
+            async deleteUser() {
+                let userChoice = window.confirm('Are you sure you want to delete your account? This action is IRREVERSIBLE!!!');
+                const token = localStorage.getItem("token");
+                let headers = 'Bearer ' + token;
+
+                let postsCount = await axios.get('http://localhost:3000/auth/verifyPostsCount',
+                    {
+                         headers: {
+                            "Authorization": headers
+                        }
+                    });
+                    console.log(postsCount.data[0].postsCount);
+                    
+                if (userChoice === true) {
+                    axios.delete('http://localhost:3000/user/deleteAccount',
+                    {
+                        data: {
+                            totalPosts: postsCount.data[0].postsCount
+                        },
+                        headers: {
+                            "Authorization": headers
+                        }
+                    })
+                    .then(function() {
+                        
+                        store.dispatch('logOut');
+                        localStorage.removeItem('token');
+                        
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                    })
+
+                    this.$router.push('/');
+                }
             }
             /*TODO: 
-            1 - Add update for password ****FINISHED*********
-            2 - Validation for frontend for each input SignUp ***Finished***
-            3 -brcrypt password(Signup, Sign in, updated password)
-            4 -Logout(Delete Token and reset State Data) ***FINISHED***
-            5 -Adjust validation frontend Edit USer Data(Signup*Finished*, updates*Finished*, add comments, add posts(Finished) and update post)
-            6 -(Not Going to do)Validation back end
-            7 -(Not Going to do)Add visual text for Comments Posted, Deleted, User Data Updated
-            8 -(Not going to do)Modfiy CSS based on yahya recommendations: create post inline not block, Grouporama welcome erase, Color for unseen posts and block hidden if no new posts
-            9 -Add edit for profile photo *****FINISHED*****
-            10 - ***Finished***(Done for Signup and update user info)Create User check if username and email already exist. Need to be unique(Check backend on blur if email and username already exist)
-            11 - Delete Post(Delete comments with post ID, then delete specific post). Delete user (Delete comments with userID and POST ID, delete Post with user ID, Delete Specific User and Log out, Delete 1 from all viewed posts on all users)
-            12 - Delete User(Delete all comments with user ID, All posts with user ID, and user with User ID)
-            13 - Fix CSS responsiveness on all pages
-            14 - Token authenticate Sign up , and directly go to posts page
+            
+            
+            
+            12 - Delete User(Delete all comments with user ID, All posts with user ID, and user with User ID, Update viewed posts of all other users by deleted user number of post)
             */
         }
     }

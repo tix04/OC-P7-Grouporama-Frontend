@@ -31,6 +31,7 @@
                 <b-form-input
                 id="password"
                 type="password"
+                placeholder="Password"
                 v-on:blur="passValidation()"
                 required
                 >
@@ -39,6 +40,7 @@
                 <b-button type="submit" variant="primary" style="margin-top: 15px;">Submit</b-button>
               </b-form-group>
             </b-form>
+            <p id="message"></p>
           </b-jumbotron>
           <p style="text-align: center;">Don't have an Account.<span id="signUp"><router-link to="/signup">Sign Up</router-link></span></p>
         </b-col>
@@ -50,7 +52,7 @@
 
 <script>
 import axios from 'axios';
-//import store from '../store/index';
+//import { required, helpers,minLength, maxLength, between, sameAs } from 'vuelidate/lib/validators';
 export default {
   name: "Login",
   data () {
@@ -60,6 +62,9 @@ export default {
       validUser: null,
       validPass: null
     }
+  },
+  validations: {
+    
   },
   methods: 
   {
@@ -92,21 +97,28 @@ export default {
       
       await axios.post('http://localhost:3000/auth/login', dataAuth)
         .then( function (response) {
-          console.log(response)
+          
+          
           token = response.data.token;
+          
+          localStorage.setItem("token", token);
+          window.location.href = '#/posts';
 
         })
-        .catch(err => console.log(err));
+        .catch(function(err) {
+          console.log(err);
+          document.getElementById('message').style.color = 'red';
+          document.getElementById('message').textContent = 'Username or Password is invalid. Please Try again!';
+          });
 
-        localStorage.setItem("token", token);
-       
+        
         this.username = '';
         this.password = '';
         
         document.getElementById('username').value = null;
         document.getElementById('password').value = null;
         
-        this.$router.push({name: 'Posts'});
+        
         
      
     }

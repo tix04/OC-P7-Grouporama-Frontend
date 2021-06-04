@@ -6,7 +6,7 @@ export default {
     data () {
         return {
             
-            imageUrl: "../assets/default-user-image.png",
+            imageUrl: require('@/assets/default-user-image.png'),
             profile_image: '',
             username: 'Deleted User',
             newComment: '',
@@ -51,10 +51,11 @@ export default {
                   postArray = posts;
 
                   data =[postArray, userID, userProfileImage, userName];
+                  store.commit('retrieveNewsFeedData', data);
                 })
                 .catch(err => console.log(err));
 
-                store.commit('retrieveNewsFeedData', data);
+               
                 
             } catch(err) {
                 console.error(err);
@@ -66,36 +67,51 @@ export default {
           },
           cancelComment (index) {
             document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
-            document.getElementById('commentForm').reset();
+            document.getElementById(`newComment_${index}`).value = '';
+            document.getElementById(`commentForm_${index}`).reset();
+            this.newComment = '';
           },
           async deleteComment (postID ,commentId, index) {
+            
+            const token = localStorage.getItem("token");
+            let headers = 'Bearer ' + token;
+            
             this.postID = postID;
             this.commentID = commentId;
-            this.initialComments = this.postArray[index].comments;
+            let initialCommentAmount = document.querySelectorAll('.icons .totalComments')[index].textContent;
 
 
-            const commentsDeleted = this.initialComments - 1;
-            let commentAmount = document.querySelectorAll('.icons .totalComments')[index].innerHTML;
+            let parsedCommentAmount = parseInt(initialCommentAmount);
+            let updatedCommentAmount = --parsedCommentAmount;
 
-            commentAmount = parseInt(commentAmount) - 1;
-            document.querySelectorAll('.icons .totalComments')[index].innerHTML = commentAmount;
+            let commentData = {post_id: this.postID ,comment_id: this.commentID, comments: updatedCommentAmount};
 
+            
+            await axios.delete('http://localhost:3000/comments/delete', 
+              {
+                data: commentData,
+                headers: {
+                  "Authorization": headers
+                }
+              }
+            ).then(function() {
 
-            let commentData = {post_id: this.postID ,comment_id: this.commentID, comments: commentsDeleted};
-
-            try {
-              await axios.delete('http://localhost:3000/comments/delete', {data: commentData});
               let eraseElement = document.getElementById(`comments_${commentId}`);
               eraseElement.style.display = "none";
+
+              document.getElementsByClassName('totalComments')[index].textContent = updatedCommentAmount;
+             
+
+              store.dispatch('updateComments', postID);
+             
+            }). catch (function(err) {
+              console.log(err);
+            })
+
               this.commentID = null;
               this.postID = null;
               this.userID = null;
               this.initialComments = 0;
-             
-              
-            } catch (err) {
-              console.log(err);
-            }
 
           },
           async postComment (id, index) {
@@ -109,11 +125,9 @@ export default {
             let parsedCommentAmount = parseInt(initialCommentAmount);
             let updatedCommentAmount = ++parsedCommentAmount;
             
-
             
             //Retrieve Token Authentication
             const token = localStorage.getItem("token");
-
             let headers = 'Bearer ' + token;
 
             let commentData = {commentContent: newComment, postID: postID, comments: updatedCommentAmount, userID: userID };
@@ -124,35 +138,40 @@ export default {
               }
             }).then(function () {
 
+              
                 //FIRST OPTIONAL CODE FOR TEMPORARY COMMENTS
+                /*
                 if(document.getElementById('tempCommentContainer')) {
                   document.getElementById('tempCommentContainer').style.display = "block";
                   document.querySelectorAll('.icons .totalComments')[index].textContent = updatedCommentAmount;
                 }
-                
+                */
+                document.getElementsByClassName('totalComments')[index].textContent = updatedCommentAmount;
                 document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
-                newComment = '';
+                document.getElementById(`newComment_${index}`).value = '';
+
+                
+                document.getElementById(`commentForm_${index}`).reset();
                 store.dispatch('updateComments', postID);
 
             }).catch(function (err) {
               console.log(err);
             })
-            document.getElementById('commentForm').reset();
+
           },
           async setLikes (id) {
             
             //Initial likes Array state. Used to check if user has already liked or not
             let parsedLikesArray;
             let likeButton = document.getElementById(`likeBtn_${id}`);
-            let likeAmount = document.getElementById(`likeAmount_${id}`);
+            //let likeAmount = document.getElementById(`likeAmount_${id}`);
             likeButton.classList.toggle('like-active');
             
 
-            let amount = parseInt(likeAmount.textContent);
+            let amount = parseInt(document.getElementById(`likeAmount_${id}`).textContent);
 
             //Retrieve Token Authentication
             const token = localStorage.getItem("token");
-            console.log(token);
 
             let headers = 'Bearer ' + token;
             let url = `http://localhost:3000/posts/${id}`;
@@ -165,16 +184,16 @@ export default {
                 parsedLikesArray = JSON.parse(response.data[0].likes_array);
 
                 if(!parsedLikesArray.includes(store.state.userID) ) {
-                  likeAmount.innerHTML = amount + 1;
+                  document.getElementById(`likeAmount_${id}`).innerHTML = amount + 1;
                   parsedLikesArray.push(store.state.userID);
 
                 }else{
-                  likeAmount.innerHTML = amount - 1;
+                  document.getElementById(`likeAmount_${id}`).innerHTML = amount - 1;
                   let index = parsedLikesArray.indexOf(store.state.userID);
 
                   parsedLikesArray.splice(index, 1);
                 }
-              
+                
                 axios.put('http://localhost:3000/posts/setLikes', 
                 {
                   data: {
@@ -184,7 +203,7 @@ export default {
                 },
                 {
                   headers: {
-                        "Authorization": headers
+                    "Authorization": headers
                   }
                 }
                 )
@@ -200,29 +219,24 @@ export default {
           },
           async deletePost(id) {
             const postID = id;
+
             const token = localStorage.getItem("token");
-            console.log(token);
-
             let headers = 'Bearer ' + token;
-            
-            console.log(postID);
-            
-            await axios.delete('http://localhost:3000/posts/delete', 
-              {data: {
-                postID: postID
-                }
-              },
-              {
-                headers: {
-                      "Authorization": headers
-                }
-              })
-              .then(function() {
-                  let posts, comments, userID, userName, userProfileImage, postArray ,data;
-                  const token = localStorage.getItem("token");
 
-                  let headers = 'Bearer ' + token;
-                  axios.get('http://localhost:3000/posts', {
+            await axios.delete('http://localhost:3000/posts/delete',
+               {
+                data : {
+                  postID: postID
+                },
+                 headers: {
+                  "Authorization": headers
+                }
+              }
+             ).then(function() {
+               
+               let posts, comments, userID, userName, userProfileImage, postArray ,data;
+                
+               axios.get('http://localhost:3000/posts', {
                     headers: {
                       "Authorization": headers
                     }
@@ -246,18 +260,18 @@ export default {
                     postArray = posts;
 
                     data =[postArray, userID, userProfileImage, userName];
-
+                    store.commit('retrieveNewsFeedData', data);
+                    
                   })
                   .catch(function(err) {
                     console.log(err);
                   });
-
-                  store.commit('retrieveNewsFeedData', data);
+                    
+                   
+              }).catch(function(err) {
+              console.log(err);
               })
-              .catch(function(err) {
-                console.log(err);
-              })
-                
+            
           },
           editPost(id, content) {
             this.$router.push({name: 'EditPost', query: {postID: id,postContent: content}});
@@ -289,7 +303,7 @@ export default {
         </b-dropdown>
         
         <div class="profilePic">
-          <b-img fluid v-if="post.profile_image === null || post.profile_image === '' || post.profile_image === undefined" :src="this.imageUrl" alt="Profile picture" rounded="circle" thumbnail></b-img>
+          <b-img fluid v-if="post.profile_image === null || post.profile_image === '' || post.profile_image === undefined" :src="imageUrl" alt="Profile picture" rounded="circle" thumbnail></b-img>
           <b-img v-else :src="post.profile_image" alt="Profile picture" rounded="circle" thumbnail></b-img>
           <span class="username">{{ post.username }}</span>
         </div>
@@ -318,7 +332,7 @@ export default {
         </div>
 
           <b-container mb="2" style="display: none;" class="commentInputContainer">
-            <b-form @submit.prevent="postComment(post.post_id, index)"  id="commentForm">
+            <b-form @submit.prevent="postComment(post.post_id, index)"  :id="'commentForm_'+index">
               <b-form-textarea
               class="newComment"
               :id="'newComment_'+index"
@@ -334,14 +348,14 @@ export default {
             </b-form>
         </b-container>
 
-        <b-container v-if="post.comments > 0">
+        <b-container>
             
           <b-row v-for="comment in post.linked_comments" :key="comment.comment_id" :id="'comments_'+comment.comment_id" class="comments">
             
             <b-col class="content" cols="12">
-              <b-img v-if="comment.profile_image === null || comment.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle"></b-img>
+              <b-img v-if="comment.profile_image === null || comment.profile_image === '' || comment.profile_image === undefined" :src="imageUrl" alt="Profile picture" rounded="circle"></b-img>
               <b-img v-else :src="comment.profile_image" alt="Profile picture" rounded="circle"></b-img>
-              <span v-if="comment.username === null || comment.username === '' || comment.username === undefined" class="username">{{this.username}}</span>
+              <span v-if="comment.username === null || comment.username === '' || comment.username === undefined" class="username">{{username}}</span>
               <span v-else class="username">{{comment.username}}</span> 
               <br/>
               {{ comment.comment_content}}
@@ -352,7 +366,7 @@ export default {
           </b-row>
         </b-container>
 
-        <!--FIRST OPTIONAL CODE FOR TEMPORARY COMMENTS-->
+        <!--FIRST OPTIONAL CODE FOR TEMPORARY COMMENTS
         <b-container v-else style="display: none;" id="tempCommentContainer">
             
           <b-row v-for="comment in post.linked_comments" :key="comment.comment_id" :id="'comments_'+comment.comment_id" class="comments">
@@ -370,6 +384,7 @@ export default {
             </b-col>
           </b-row>
         </b-container>
+        -->
         <!-- ***SECOND OPTIONAL CODE FOR TEMPORARY COMMENTS
         <b-container v-else style="display: none;" id="tempCommentContainer">
           <b-row id="temporaryComment">
