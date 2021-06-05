@@ -6,6 +6,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+
     defaultUserImage: require('@/assets/default-user-image.png'),
     userID: 0,
     userName: '',
@@ -13,10 +14,12 @@ export default new Vuex.Store({
     online: false,
     postsData: [],
     userDetail: []
+
   },
   getters: {
   },
   mutations: {
+
     retrieveNewsFeedData (state, data) {
       state.postsData = data[0];
       state.userID = data[1];
@@ -30,25 +33,29 @@ export default new Vuex.Store({
       for (var i = 0; i < state.postsData.length; i++) {
         if(state.postsData[i].post_id === postID) {
           state.postsData[i].linked_comments = response.data;
-          console.log(state.postsData[i].linked_comments);
+          
         }
       }
     },
     updateUser(state, data) {
+
       state.userDetail = data;
       state.userID = data.user_id;
       state.userProfilePicture = data.profile_image;
       
     },
     logOut(state) {
+
       state.userID = 0;
       state.userProfilePicture = null;
       state.online = false;
       state.postsData = [];
       state.userDetail = [];
+
     }
   },
   actions: {
+    
     async updateComments ({commit}, postID) {
 
       const token = localStorage.getItem("token");

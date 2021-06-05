@@ -22,6 +22,7 @@ export default {
       Notification
     },
     async created () {
+
         try { 
                 let posts, comments, userID, userName, userProfileImage, postArray ,data;
                 const token = localStorage.getItem("token");
@@ -32,6 +33,7 @@ export default {
                     "Authorization": headers
                   }
                 }).then(function (response) {
+
                   posts = response.data[0];
                   comments = response.data[1];
                   userProfileImage = response.data[2][0].profile_image;
@@ -60,16 +62,21 @@ export default {
             } catch(err) {
                 console.error(err);
             }
+
         },
         methods: {
           addComment(index) {
+
             document.querySelectorAll('.commentInputContainer')[index].style.display = 'block';
+
           },
           cancelComment (index) {
+
             document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
             document.getElementById(`newComment_${index}`).value = '';
             document.getElementById(`commentForm_${index}`).reset();
             this.newComment = '';
+
           },
           async deleteComment (postID ,commentId, index) {
             
@@ -139,13 +146,6 @@ export default {
             }).then(function () {
 
               
-                //FIRST OPTIONAL CODE FOR TEMPORARY COMMENTS
-                /*
-                if(document.getElementById('tempCommentContainer')) {
-                  document.getElementById('tempCommentContainer').style.display = "block";
-                  document.querySelectorAll('.icons .totalComments')[index].textContent = updatedCommentAmount;
-                }
-                */
                 document.getElementsByClassName('totalComments')[index].textContent = updatedCommentAmount;
                 document.querySelectorAll('.commentInputContainer')[index].style.display = 'none';
                 document.getElementById(`newComment_${index}`).value = '';
@@ -158,13 +158,15 @@ export default {
               console.log(err);
             })
 
+            this.newComment = '';
+
           },
           async setLikes (id) {
             
             //Initial likes Array state. Used to check if user has already liked or not
             let parsedLikesArray;
             let likeButton = document.getElementById(`likeBtn_${id}`);
-            //let likeAmount = document.getElementById(`likeAmount_${id}`);
+            
             likeButton.classList.toggle('like-active');
             
 
@@ -172,22 +174,24 @@ export default {
 
             //Retrieve Token Authentication
             const token = localStorage.getItem("token");
-
             let headers = 'Bearer ' + token;
             let url = `http://localhost:3000/posts/${id}`;
+
             await axios.get(url, {
               headers: {
                 "Authorization": headers
               }
             }).then(function (response) {
-                console.log(response.data[0].likes_array, typeof(response.data[0].likes_array));
+               
                 parsedLikesArray = JSON.parse(response.data[0].likes_array);
 
                 if(!parsedLikesArray.includes(store.state.userID) ) {
+
                   document.getElementById(`likeAmount_${id}`).innerHTML = amount + 1;
                   parsedLikesArray.push(store.state.userID);
 
                 }else{
+
                   document.getElementById(`likeAmount_${id}`).innerHTML = amount - 1;
                   let index = parsedLikesArray.indexOf(store.state.userID);
 
@@ -208,7 +212,9 @@ export default {
                 }
                 )
                 .then(function (response) {
+
                   console.log(response);
+
                 })
                 .catch(function (error) {
                   console.log(error);
@@ -218,6 +224,7 @@ export default {
 
           },
           async deletePost(id) {
+
             const postID = id;
 
             const token = localStorage.getItem("token");
@@ -241,6 +248,7 @@ export default {
                       "Authorization": headers
                     }
                   }).then(function (response) {
+                    
                     posts = response.data[0];
                     comments = response.data[1];
                     userProfileImage = response.data[2][0].profile_image;
@@ -366,42 +374,6 @@ export default {
           </b-row>
         </b-container>
 
-        <!--FIRST OPTIONAL CODE FOR TEMPORARY COMMENTS
-        <b-container v-else style="display: none;" id="tempCommentContainer">
-            
-          <b-row v-for="comment in post.linked_comments" :key="comment.comment_id" :id="'comments_'+comment.comment_id" class="comments">
-            
-            <b-col class="content" cols="12">
-              <b-img v-if="comment.profile_image === null || comment.profile_image === ''" :src="this.imageUrl" alt="Profile picture" rounded="circle"></b-img>
-              <b-img v-else :src="comment.profile_image" alt="Profile picture" rounded="circle"></b-img>
-              <span v-if="comment.username === null || comment.username === '' || comment.username === undefined" class="username">{{this.username}}</span>
-              <span v-else class="username">{{comment.username}}</span> 
-              <br/>
-              {{ comment.comment_content}}
-              <b-row align-h="end" v-if="post.user_id === $store.state.userID">
-                <b-button @click="deleteComment(post.post_id ,comment.comment_id, index)" size="sm" pill variant="outline-danger" style="font-weight: bold;border: none;">Delete</b-button>
-              </b-row>
-            </b-col>
-          </b-row>
-        </b-container>
-        -->
-        <!-- ***SECOND OPTIONAL CODE FOR TEMPORARY COMMENTS
-        <b-container v-else style="display: none;" id="tempCommentContainer">
-          <b-row id="temporaryComment">
-            <b-col class="content" cols="12">
-              <b-img v-if="$store.state.userProfilePicture === null || $store.state.userProfilePicture === '' || $store.state.userProfilePicture === undefined" :src="this.imageUrl" alt="Profile picture" rounded="circle"></b-img>
-              <b-img v-else :src="$store.state.userProfilePicture" alt="Profile picture" rounded="circle"></b-img>
-              <span v-if="$store.state.username === null || $store.state.username === '' || $store.state.username === undefined" class="username">{{this.username}}</span>
-              <span v-else class="username">{{$store.state.username}}</span> 
-              <br/>
-              <span id="temporaryContent"></span>
-              <b-row align-h="end" v-if="post.user_id === $store.state.userID">
-                <b-button @click="deleteComment(post.post_id ,comment.comment_id, index)" size="sm" pill variant="outline-danger" style="font-weight: bold;border: none;">Delete</b-button>
-              </b-row>
-            </b-col>
-          </b-row>
-        </b-container>
-        -->
       </b-container>
     </div>
 </template>

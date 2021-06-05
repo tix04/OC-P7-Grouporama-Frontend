@@ -58,35 +58,46 @@ export default {
 
     methods: {
         upload(event) {
+
             this.postImage = event.target.files[0];
 
             let regex = /image\/jpeg|image\/jpg|image\/png|image\/gif/;
 
             if(!regex.test(this.postImage.type)) {
+
                 this.invalidFile = true;
                 document.getElementById('postImage').value = null;
                 document.getElementById('postImage').style.borderColor = "#dc3545";
+
             }else {
+
                 this.invalidFile = false;
                 document.getElementById('postImage').style.border = "2px solid green";
+
             }
 
         },
         onReset() {
+
             this.postImage = null;
             this.invalidFile = false;
             document.getElementById('validationError').style.display = "none";
             document.getElementById('form').reset();
             this.$router.push('/posts');
+
         },
         async onSubmit() {
+
             let text = document.getElementById('postContent');
             const token = localStorage.getItem("token");
             let headers = 'Bearer ' + token;
+            
+            if(text.value === '' && this.postImage === null) {
 
-            if(text.textContent === '' && this.postImage === null) {
                 document.getElementById('validationError').style.display = "block";
+
             }else {
+
                 const fd = new FormData();
                 fd.append('image', this.postImage);
                 fd.append('postContent', this.form.postContent);
@@ -108,6 +119,7 @@ export default {
 
                     document.getElementById('form').reset();
                     this.$router.push('/posts');
+                    
                 } catch (err) {
                     console.log(err);
                 }

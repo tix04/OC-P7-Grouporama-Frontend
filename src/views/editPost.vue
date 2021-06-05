@@ -51,18 +51,22 @@ export default {
         }
     },
     created () {
+
      this.postID = parseInt(this.$route.query.postID);
      this.originalContent = this.$route.query.postContent;
      
     },
     methods: {
+
         upload(event) {
             this.postImage = event.target.files[0];
             
         },
         async onSubmit() {
+
             const token = localStorage.getItem("token");
             let headers = 'Bearer ' + token;
+
             const updatedContent = this.form.postContent ? this.form.postContent : this.originalContent;
             
             
@@ -78,11 +82,13 @@ export default {
                     'Authorization': headers
                     }
                 });
+
                 this.form.postContent = '';
                 this.postImage = null;
                 this.postID = null;
                 document.getElementById('form').reset();
                 this.$router.push('/posts');
+                
             } catch (err) {
                 console.log(err);
             }

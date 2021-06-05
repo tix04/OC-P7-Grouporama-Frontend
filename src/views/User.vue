@@ -242,10 +242,12 @@ export default {
         }
     },
     async created() {
-        //Set userID get it from token authentication
+        
             try {
+                
                 const token = localStorage.getItem("token");
                 let headers = 'Bearer ' + token;
+
                 const response = await axios.get('http://localhost:3000/user/userProfile', {
                     headers: {
                         "Authorization": headers
@@ -282,56 +284,70 @@ export default {
                 this.editPassword = true;
             },
             hideProfilePicture() {
+
                 this.validProfilePhoto = false;
                 this.editProfilePicture = false;
                 this.newProfilePhoto = null;
                 document.getElementById('invalidImage').style.display = 'none';
                 document.getElementById('invalidImage').textContent = '';
                 document.getElementById('form').reset();
+
             },
             hideFirstName() {
+
                 this.validFirstName = false;
                 this.editFirstName = false;
                 document.getElementById('invalidFirstName').style.display = "none";
                 document.getElementById('newFirstName').style.border = "1px solid #ced4da";
                 document.getElementById('form1').reset();
+
             },
              hideLastName() {
+
                  this.validLastName = false;
                 this.editLastName = false;
                 document.getElementById('invalidLastName').style.display = "none";
                 document.getElementById('newLastName').style.border = "1px solid #ced4da";
                 document.getElementById('form2').reset();
+
             },
              hideAge() {
-                 this.validAge = false;
+
+                this.validAge = false;
                 this.editAge = false;
                 document.getElementById('invalidAge').style.display = "none";
                 document.getElementById('newAge').style.border = "1px solid #ced4da";
                 document.getElementById('form3').reset();
+
             },
              hideEmail() {
-                 this.validEmail = false;
+
+                this.validEmail = false;
                 this.editEmail = false;
                 document.getElementById('invalidEmail').style.display = "none";
                 document.getElementById('newEmail').style.border = "1px solid #ced4da";
                 document.getElementById('form4').reset();
+
             },
             hideUsername() {
+
                 this.validUsername = false;
                 this.editUsername = false;
                 document.getElementById('invalidUsername').style.display = "none";
                 document.getElementById('newUsername').style.border = "1px solid #ced4da";
                 document.getElementById('form5').reset();
+
             },
              hidePassword() {
-                 this.validPassword = false;
-                 this.validPwdCheck = false;
+
+                this.validPassword = false;
+                this.validPwdCheck = false;
                 this.editPassword = false;
                 document.getElementById('invalidPassword').style.display = "none";
                 document.getElementById('newPassword').style.border = "1px solid #ced4da";
                 document.getElementById('confirmPassword').style.border = "1px solid #ced4da";
                 document.getElementById('form6').reset();
+
             },
             firstNameValidator() {
                 let input = document.getElementById('newFirstName').value;
@@ -367,6 +383,7 @@ export default {
                 }
             },
             lastNameValidator() {
+
                 let input = document.getElementById('newLastName').value;
                 
 
@@ -400,9 +417,9 @@ export default {
                 }
             },
             ageValidator() {
+
                 let age = document.getElementById('newAge').value;
                 
-
                 if(age < 18) {
 
                     this.validAge = false;
@@ -493,6 +510,7 @@ export default {
                 }
             },
             togglePassword() {
+
             var show = document.getElementById('newPassword');
             
                 if(show.type === 'password') {
@@ -543,6 +561,7 @@ export default {
                 
             },
             pwdCheckValidator() {
+
                 let input = document.getElementById('confirmPassword').value;
                 
                 if(input === '' || input === null) {
@@ -571,6 +590,7 @@ export default {
 
             },
             saveImage(event) {
+
                 this.newProfilePhoto = event.target.files[0];
 
                 let regex = /image\/jpeg|image\/jpg|image\/png|image\/gif/;
@@ -589,7 +609,6 @@ export default {
                     document.getElementById('invalidImage').style.display = 'none';
                     document.getElementById('newProfilePicture').style.border = '2px solid green'
 
-                    
                 }
                 
             },
@@ -630,6 +649,7 @@ export default {
                 }
             },
             async updateFirstName() {
+
                 let newData = document.getElementById('newFirstName').value;
                 
 
@@ -686,12 +706,14 @@ export default {
                 }
             },
             async updateAge() {
+
                 let newData = document.getElementById('newAge').value;
                 
                 const token = localStorage.getItem("token");
                 let headers = 'Bearer ' + token;
                 
                 if(this.validAge) {
+
                     await axios.put('http://localhost:3000/user/age', {age: newData} , {
                         headers: {
                             "Authorization": headers
@@ -701,6 +723,7 @@ export default {
                         store.dispatch('updateUser');
 
                     }).catch (function (err) {
+
                         console.log(err);
                     });
 
@@ -713,6 +736,7 @@ export default {
                 }
             },
             async updateEmail() {
+
                 let newData = document.getElementById('newEmail').value;
                 
                 const token = localStorage.getItem("token");
@@ -729,6 +753,7 @@ export default {
                         store.dispatch('updateUser');
 
                     }).catch (function (err) {
+
                         console.log(err);
                     });
 
@@ -741,6 +766,7 @@ export default {
                 }
             },
             async updateUsername() {
+
                 let newData = document.getElementById('newUsername').value;
                 
                 const token = localStorage.getItem("token");
@@ -757,6 +783,7 @@ export default {
                         store.dispatch('updateUser');
 
                     }).catch (function (err) {
+
                         console.log(err);
                     });
 
@@ -798,6 +825,7 @@ export default {
                         store.dispatch('updateUser');
 
                     }).catch (function (err) {
+
                         console.log(err);
                     });
 
@@ -812,7 +840,9 @@ export default {
 
             },
             async deleteUser() {
+
                 let userChoice = window.confirm('Are you sure you want to delete your account? This action is IRREVERSIBLE!!!');
+
                 const token = localStorage.getItem("token");
                 let headers = 'Bearer ' + token;
 
@@ -822,7 +852,7 @@ export default {
                             "Authorization": headers
                         }
                     });
-                    console.log(postsCount.data[0].postsCount);
+                    
                     
                 if (userChoice === true) {
                     axios.delete('http://localhost:3000/user/deleteAccount',
@@ -841,18 +871,14 @@ export default {
                         
                     })
                     .catch(function(err) {
+
                         console.log(err);
                     })
 
                     this.$router.push('/');
                 }
             }
-            /*TODO: 
             
-            
-            
-            12 - Delete User(Delete all comments with user ID, All posts with user ID, and user with User ID, Update viewed posts of all other users by deleted user number of post)
-            */
         }
     }
     

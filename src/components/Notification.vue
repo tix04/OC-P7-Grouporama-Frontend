@@ -2,9 +2,9 @@
 <b-container>
     <b-container>
         <HelloUser msg="Welcome" />
-        <p v-if="this.totalPosts > this.viewedPosts">You have <span>{{ newPosts }}</span> new Posts.</p>
-        <p v-else>You have no new Posts</p>
-        <!--Figure out Logic to determine which posts you haven't seen-->
+        <p v-if="this.totalPosts > this.viewedPosts" style="font-weight: bold;">Notification: <span style="color: red;">{{ newPosts }}</span> new Posts.</p>
+        <p v-else style="font-weight: bold;color: green;">You have no new Posts</p>
+        
     </b-container>
 </b-container>
 </template>
@@ -19,6 +19,7 @@ export default {
     },
     data () {
         return {
+
             viewedPosts: 0,
             totalPosts: 0
 
@@ -26,7 +27,9 @@ export default {
     },
     computed: {
         newPosts() {
+
             return this.totalPosts - this.viewedPosts;
+            
         }
     },
     async created () {
@@ -43,11 +46,11 @@ export default {
             
             let postsTotal = postSummary.data[0][0];
             let viewedPosts = postSummary.data[1][0]
-            console.log(postSummary.data[0][0]);
+            
             this.totalPosts = postsTotal.postsCount;
             this.viewedPosts = viewedPosts.viewed_posts;
 
-            console.log(this.totalPosts, this.viewedPosts);
+            
         }catch(err) {
             console.error(err);
         }
@@ -58,17 +61,15 @@ export default {
         try {
             
             const token = localStorage.getItem("token");
-            
-
             let headers = 'Bearer ' + token;
+            
             await axios.put('http://localhost:3000/posts/newPostStatus/', {count: this.totalPosts}, {
                 headers: {
                     "Authorization": headers
                 }
             });
 
-            console.log('setting new viewed posts is done')
-
+            
         }catch(err) {
             console.error(err);
         }

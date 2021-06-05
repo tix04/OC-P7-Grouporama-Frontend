@@ -2,7 +2,7 @@
   <div id="app">
     <!--Nav-->
     <b-container fluid id="nav">
-    
+    <!--Logo-->
       <b-container fluid id="logo">
         <b-row>
           <b-col>
@@ -22,6 +22,7 @@
                   </svg>
               </b-navbar-brand>
           </b-col>
+          <!--Online and Offline Profile Picture-->
           <b-col v-if="$store.state.userProfilePicture === null || $store.state.userProfilePicture === undefined || $store.state.userProfilePicture === ''" class="profilePic">
             <img class="img-fluid rounded-circle" src="./assets/default-user-image.png" alt="Profile Picture">
           </b-col>

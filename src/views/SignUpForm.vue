@@ -248,6 +248,7 @@ export default {
     },
     methods:{
         togglePassword() {
+
             var show = document.getElementById('password');
             
             if(show.type === 'password') {
@@ -261,6 +262,7 @@ export default {
             }
         },
         togglePwdCheck() {
+
             var show = document.getElementById('pwdCheck');
             
             if(show.type === 'password') {
@@ -278,17 +280,22 @@ export default {
             let regex = /image\/jpeg|image\/jpg|image\/png|image\/gif/;
 
             if (!regex.test(this.form.profilePhoto.content.type)) {
+
                 this.form.profilePhoto.type = true;
                 document.getElementById('profilePhoto').value = null;
                 document.getElementById('profilePhoto').style.borderColor = "#dc3545";
+
             }else {
+
                 this.form.profilePhoto.type = false;
                 this.form.profilePhoto.valid = true;
                 document.getElementById('profilePhoto').style.border = "2px solid green";
+
             }
 
         },
         validateFirstName() {
+
             let regex = /^[a-zA-Z]+$/i;
             let firstName = this.form.firstName.content;
             
@@ -319,6 +326,7 @@ export default {
             }
         },
         validateLastName() {
+
             let regex = /^[a-zA-Z]+$/i;
             let lastName = this.form.lastName.content;
             
@@ -349,6 +357,7 @@ export default {
             }
         },
         validateAge() {
+
             let age = this.form.age.value;
             
             if(age < 18) {
@@ -399,6 +408,7 @@ export default {
 
         },
         async validateUsername() {
+
             let regex = /^\S*$/;
             let username = this.form.username.content;
             
@@ -487,7 +497,6 @@ export default {
         },        
         async onSubmit() {
 
-
             if(
                 this.form.firstName.valid && this.form.lastName.valid && this.form.age.valid
                 && this.form.email.valid && this.form.username.valid && this.form.password.valid
@@ -521,6 +530,7 @@ export default {
                     window.location.href = '#/posts';
 
                 } catch (err) {
+                    
                     console.log(err);
                 }
             }else {

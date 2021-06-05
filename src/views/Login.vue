@@ -52,7 +52,7 @@
 
 <script>
 import axios from 'axios';
-//import { required, helpers,minLength, maxLength, between, sameAs } from 'vuelidate/lib/validators';
+
 export default {
   name: "Login",
   data () {
@@ -69,6 +69,7 @@ export default {
   methods: 
   {
     userValidation () {
+
       let userName = document.getElementById('username');
       
       
@@ -80,6 +81,7 @@ export default {
 
     },
     passValidation () {
+
       let pwd = document.getElementById('password');
 
       if(pwd.value === '') {
@@ -87,6 +89,7 @@ export default {
       }else{
         this.validPass = false;
       }
+
     },
     async onSubmit () {
       let token;
@@ -106,9 +109,11 @@ export default {
 
         })
         .catch(function(err) {
+
           console.log(err);
           document.getElementById('message').style.color = 'red';
           document.getElementById('message').textContent = 'Username or Password is invalid. Please Try again!';
+
           });
 
         
@@ -118,9 +123,6 @@ export default {
         document.getElementById('username').value = null;
         document.getElementById('password').value = null;
         
-        
-        
-     
     }
   }
 }
