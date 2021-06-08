@@ -815,7 +815,7 @@ export default {
                 }else if(password === confirmPassword && this.validPassword === true && this.validPwdCheck === true) {
 
                     newData = password;
-
+                    
                     await axios.put('http://localhost:3000/user/password', {newPassword: newData}, {
                     headers: {
                         "Authorization": headers

@@ -120,9 +120,6 @@ export default {
         this.username = '';
         this.password = '';
         
-        document.getElementById('username').value = null;
-        document.getElementById('password').value = null;
-        
     }
   }
 }
